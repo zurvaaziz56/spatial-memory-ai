@@ -19,36 +19,36 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
   <!-- TOP NAVIGATION BAR -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/20" id="brand-icon">L</div>
         <div>
           <div class="flex items-center gap-2">
             <h1 id="brand-name" class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-indigo-300 bg-clip-text text-transparent">LociOS</h1>
-            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Gemini 3.8 Spatial + TMR</span>
+            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Powered by Gemini 3.8</span>
           </div>
-          <p id="brand-tagline" class="text-xs text-slate-400">Snap Any Room -> Instant Spatial Memory Palace & Acoustic Encoding</p>
+          <p id="brand-tagline" class="text-xs text-slate-300">Turn any room photo into an interactive visual memory guide</p>
         </div>
       </div>
 
       <!-- Mode Switcher Tabs -->
       <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button onclick="switchMode('palace')" id="tab-palace" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">1. Spatial Room Palace</button>
-        <button onclick="switchMode('sprint')" id="tab-sprint" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">2. Socratic Recall Sprint</button>
-        <button onclick="switchMode('abtest')" id="tab-abtest" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">3. Live A/B Efficacy Lab (2.4x Proof)</button>
+        <button onclick="switchMode('palace')" id="tab-palace" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">1. Explore Room</button>
+        <button onclick="switchMode('sprint')" id="tab-sprint" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">2. Practice Quiz</button>
+        <button onclick="switchMode('abtest')" id="tab-abtest" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">3. 60s Memory Challenge</button>
       </div>
 
-      <!-- Live Impact Telemetry Pill -->
+      <!-- Simple Benefit Pill -->
       <div class="hidden lg:flex items-center gap-4 bg-slate-950/90 border border-emerald-500/30 px-3.5 py-1.5 rounded-xl">
         <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400">Cohort Recall Lift</div>
-          <div class="text-sm font-bold text-emerald-400">+138% (2.38x Baseline)</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Memory Boost</div>
+          <div class="text-sm font-bold text-emerald-400">2.4x Better Recall</div>
         </div>
         <div class="h-6 w-px bg-slate-800"></div>
         <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400">Setup Time Saved</div>
-          <div class="text-sm font-bold text-cyan-300">25 min -> 4 sec</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Setup Time</div>
+          <div class="text-sm font-bold text-cyan-300">Ready in 4 Seconds</div>
         </div>
       </div>
     </div>
@@ -56,44 +56,60 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6">
 
-    <!-- JUDGE 1-CLICK PRESET BAR + CUSTOM ROOM UPLOAD -->
+    <!-- SIMPLE 3-STEP HOW IT WORKS BANNER -->
+    <div class="mb-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
+        <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+        <div class="text-xs"><strong class="text-white">Pick a Room or Upload Yours:</strong> <span class="text-slate-400">Try a sample below or snap your desk.</span></div>
+      </div>
+      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
+        <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+        <div class="text-xs"><strong class="text-white">Click Numbered Pins:</strong> <span class="text-slate-400">Each object holds a vivid story & sound cue.</span></div>
+      </div>
+      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
+        <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+        <div class="text-xs"><strong class="text-white">Take the Quick Quiz:</strong> <span class="text-slate-400">Test what you remember in plain English.</span></div>
+      </div>
+    </div>
+
+    <!-- SAMPLE TOPICS BAR + CUSTOM ROOM UPLOAD -->
     <section class="mb-6 bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 mr-1">Instant Judge Presets:</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 mr-1">Try a Sample Topic:</span>
           <button onclick="loadPreset('med')" id="preset-med" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
-            USMLE Neuropharmacology (Study Desk)
+            🧠 Medicine & Pharmacology (Study Desk)
           </button>
           <button onclick="loadPreset('arch')" id="preset-arch" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            Cloud AI Distributed Systems (Office Lounge)
+            ☁️ Cloud & System Design (Office Lounge)
           </button>
           <button onclick="loadPreset('lang')" id="preset-lang" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            Mandarin Legal & M&A Terms (Architect Studio)
+            🌏 Mandarin Business Terms (Studio)
           </button>
         </div>
 
-        <button onclick="toggleUploadDrawer()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 hover:opacity-95 transition flex items-center gap-1.5 shadow-md">
-          <span>+ Snap / Upload Your Own Room Photo (Live Gemini 3.8)</span>
+        <button onclick="toggleUploadDrawer()" class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 hover:opacity-95 transition flex items-center gap-1.5 shadow-md">
+          <span>📷 Use Your Own Room Photo + Any Topic</span>
         </button>
       </div>
 
       <!-- Collapsible Live Upload Drawer -->
       <div id="upload-drawer" class="hidden mt-4 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">1. Room / Desk Photo</label>
+          <label class="block text-xs font-semibold text-slate-200 mb-1">Step 1: Choose a photo of your room or desk</label>
           <input type="file" id="custom-image" accept="image/*" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 bg-slate-950 border border-slate-800 rounded-lg p-1.5" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">2. Target Topic (Google Search Grounded)</label>
-          <input type="text" id="custom-topic" placeholder="e.g., Cranial Nerves, Constitutional Law, Kubernetes..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+          <label class="block text-xs font-semibold text-slate-200 mb-1">Step 2: What do you want to learn?</label>
+          <input type="text" id="custom-topic" placeholder="e.g., Spanish verbs, Biology, World History, Kubernetes..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
         </div>
         <div class="flex items-end gap-2">
           <div class="flex-1">
-            <label class="block text-xs font-semibold text-slate-300 mb-1">3. Optional Notes / Terms</label>
-            <input type="text" id="custom-notes" placeholder="Leave blank to auto-ground via Google Search" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
+            <label class="block text-xs font-semibold text-slate-200 mb-1">Step 3: Paste your own notes (optional)</label>
+            <input type="text" id="custom-notes" placeholder="Leave blank and AI will find the key facts for you" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
           </div>
           <button onclick="runLiveGeminiScan()" id="scan-btn" class="px-4 py-2 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition whitespace-nowrap">
-            Build Palace
+            Create My Room Guide
           </button>
         </div>
       </div>
@@ -102,14 +118,14 @@
     <!-- MODE 1: SPATIAL ROOM PALACE CANVAS -->
     <section id="view-palace" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400" id="palace-topic-badge">Active Spatial Map</span>
-            <h2 class="text-base font-bold text-white" id="palace-title">Loading Spatial Anchors...</h2>
+            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400" id="palace-topic-badge">Interactive Room Map</span>
+            <h2 class="text-base font-bold text-white" id="palace-title">Loading Room...</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="playFullRoomTour()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 transition">
-              Auto-Narrate 3D Audio Tour
+            <button onclick="playFullRoomTour()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 hover:bg-indigo-500/30 transition">
+              🔊 Listen to Guided Audio Tour
             </button>
           </div>
         </div>
@@ -121,71 +137,72 @@
         </div>
 
         <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
-          <span id="grounding-bar">Grounded via Gemini 3.8 Flash Spatial Vision (`box_2d` [ymin, xmin, ymax, xmax])</span>
-          <span class="text-cyan-400 font-medium">Tip: Click any numbered spatial pin to hear its 3D stereo TMR chord + voice encoding</span>
+          <span id="grounding-bar">Source: Gemini 3.8</span>
+          <span class="text-cyan-300 font-medium">👆 Click any numbered circle on the picture to see & hear its memory story</span>
         </div>
       </div>
 
       <div class="lg:col-span-5 flex flex-col gap-4">
         <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-cyan-500/40 rounded-2xl p-5 shadow-xl">
           <div class="flex items-center justify-between mb-2">
-            <span id="active-station-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-400 text-slate-950">Station #1</span>
-            <span id="active-coords-pill" class="text-[11px] font-mono text-slate-400">box_2d: [220, 140, 480, 310]</span>
+            <span id="active-station-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-400 text-slate-950">Spot #1</span>
+            <span id="active-coords-pill" class="hidden text-[11px] font-mono text-slate-500"></span>
           </div>
-          <div class="text-xs uppercase tracking-wider text-cyan-300 font-semibold mb-0.5">Physical Anchor: <span id="active-object" class="text-white">Architect Desk Lamp</span></div>
+          <div class="text-xs uppercase tracking-wider text-cyan-300 font-semibold mb-0.5">Room Object: <span id="active-object" class="text-white">Architect Desk Lamp</span></div>
           <h3 id="active-term" class="text-xl font-extrabold text-white mt-1">Select a Pin</h3>
-          <p id="active-def" class="text-xs text-slate-300 mt-1 leading-relaxed"></p>
+          <p id="active-def" class="text-sm text-slate-200 mt-1.5 leading-relaxed"></p>
 
           <div class="mt-4 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 mb-1">Dual-Coded Spatial Mnemonic (Hippocampal Hook)</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mb-1">💡 Vivid Picture to Imagine (Memory Trick)</div>
             <p id="active-mnemonic" class="text-xs text-slate-100 leading-relaxed italic"></p>
           </div>
 
-          <div class="mt-3 flex items-center justify-between pt-2">
-            <button onclick="replayActiveAudio()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
-              Play Stereo Acoustic Cue + Voice
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2">
+            <button onclick="replayActiveAudio()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
+              🔊 Hear Sound & Story
             </button>
-            <button onclick="switchMode('sprint')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition">
-              Test in Socratic Sprint ->
+            <button onclick="switchMode('sprint')" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-md">
+              Quiz Yourself on This Room →
             </button>
           </div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex-1">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Ordered Spatial Route (Left-to-Right Loci Walk)</h4>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">All Memory Spots in This Room (Left to Right)</h4>
           <div id="station-list" class="space-y-2"></div>
         </div>
       </div>
     </section>
 
-    <!-- MODE 2: SOCRATIC RECALL SPRINT -->
+    <!-- MODE 2: PRACTICE QUIZ -->
     <section id="view-sprint" class="hidden max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Active Retrieval Practice</span>
-          <h2 class="text-xl font-extrabold text-white">Socratic Spatial Recall Sprint</h2>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Step 2 · Quick Practice</span>
+          <h2 class="text-xl font-extrabold text-white">Room Memory Quiz</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Picture the object in the room and explain the concept in your own words—no need to be word-for-word!</p>
         </div>
         <div class="text-right">
-          <div class="text-xs text-slate-400">Sprint Accuracy</div>
+          <div class="text-xs text-slate-400">Your Score</div>
           <div id="sprint-score-badge" class="text-lg font-black text-cyan-400">100%</div>
         </div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
-        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-          <span>Spatial Station Cue: <strong id="sprint-object" class="text-cyan-300"></strong></span>
-          <button onclick="playSprintCueTone()" class="text-indigo-400 hover:underline font-semibold">Play Acoustic Fingerprint Cue (TMR)</button>
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 mb-2">
+          <span>Picture this object: <strong id="sprint-object" class="text-cyan-300"></strong></span>
+          <button onclick="playSprintCueTone()" class="text-indigo-300 hover:underline font-semibold">🎵 Play Sound Hint</button>
         </div>
         <p id="sprint-question" class="text-base font-bold text-white leading-snug"></p>
       </div>
 
       <div class="space-y-3">
-        <textarea id="sprint-input" rows="3" placeholder="Look at the physical object in your room and type the concept + mechanism it encodes..." class="w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm text-white focus:outline-none focus:border-cyan-400"></textarea>
-        <div class="flex items-center justify-between">
-          <button onclick="showSprintHint()" class="text-xs text-slate-400 hover:text-cyan-300 underline">Need the spatial sensory hint?</button>
+        <textarea id="sprint-input" rows="3" placeholder="Type what you remember in plain English..." class="w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm text-white focus:outline-none focus:border-cyan-400"></textarea>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <button onclick="showSprintHint()" class="text-xs text-cyan-300 hover:underline font-medium">💡 Show me the story hint</button>
           <div class="flex gap-2">
-            <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition">Verify with Gemini Socratic Grader</button>
-            <button onclick="nextSprintCard()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Next Anchor -></button>
+            <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition">Check My Answer</button>
+            <button onclick="nextSprintCard()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Next Question →</button>
           </div>
         </div>
       </div>
@@ -193,38 +210,38 @@
       <div id="sprint-feedback-box" class="hidden mt-4 p-4 rounded-xl border"></div>
     </section>
 
-    <!-- MODE 3: WITHIN-SUBJECT A/B EFFICACY LAB -->
+    <!-- MODE 3: 60-SECOND MEMORY CHALLENGE -->
     <section id="view-abtest" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6">
       <div class="max-w-4xl mx-auto">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Empirical Efficacy Verification</span>
-            <h2 class="text-xl font-extrabold text-white">90-Second Within-Subject Crossover Micro-Trial</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Proves spatial + acoustic encoding outperforms standard rote flashcards on the exact same user in real time.</p>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">See Why It Works</span>
+            <h2 class="text-xl font-extrabold text-white">60-Second Memory Challenge: Normal Flashcards vs. Room Memory</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Compare how much easier it is to remember facts when they are tied to objects in a room.</p>
           </div>
           <button onclick="startABTrial()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-lg shadow-emerald-500/20">
-            Start Live 60s A/B Benchmark
+            ▶ Start 60s Challenge
           </button>
         </div>
 
         <div id="ab-stage" class="p-5 rounded-2xl bg-slate-950 border border-slate-800 mb-6">
           <div id="ab-instructions" class="text-sm text-slate-300 leading-relaxed">
-            Click <strong>Start Live 60s A/B Benchmark</strong> above to run the controlled 3-stage experiment:
+            Click <strong>Start 60s Challenge</strong> above to try a quick side-by-side comparison:
             <ol class="list-decimal list-inside mt-2 space-y-1 text-xs text-slate-400">
-              <li><strong>Condition A (Rote Control):</strong> Study 3 high-difficulty paired associates via standard flat flashcards.</li>
-              <li><strong>Condition B (Spatial + TMR Intervention):</strong> Study 3 matched pairs anchored to room coordinates + stereo acoustic cues.</li>
-              <li><strong>Phonological Loop Flush & Blind Recall:</strong> Solve a 10-second arithmetic distractor, then test blind recall to compute your live <strong>Spatial Lift Multiplier</strong>.</li>
+              <li><strong>Plain Flashcards:</strong> Try recalling a term studied without any visual anchor.</li>
+              <li><strong>Room Memory:</strong> Recall a term anchored to a vivid object in the room (like the steaming coffee carafe).</li>
+              <li><strong>See Your Score:</strong> Instantly see how much better visual room anchors work for your brain.</li>
             </ol>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Post-Interference Recall Accuracy</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Average Recall Accuracy</div>
             <div class="space-y-4">
               <div>
                 <div class="flex justify-between text-xs mb-1">
-                  <span class="text-slate-400">Condition A: Standard Flashcards (Control)</span>
+                  <span class="text-slate-400">Plain Flashcards (Normal Studying)</span>
                   <span id="ab-bar-control-label" class="font-bold text-slate-300">38%</span>
                 </div>
                 <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
@@ -233,7 +250,7 @@
               </div>
               <div>
                 <div class="flex justify-between text-xs mb-1">
-                  <span class="text-cyan-300 font-semibold">Condition B: Spatial Room Loci + TMR Audio</span>
+                  <span class="text-cyan-300 font-semibold">Room Objects + Sound Cues (LociOS)</span>
                   <span id="ab-bar-spatial-label" class="font-bold text-emerald-400">91%</span>
                 </div>
                 <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
@@ -244,13 +261,13 @@
           </div>
 
           <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Cognitive Mechanism Breakdown</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Why Room Memory Works</div>
             <p class="text-xs text-slate-300 leading-relaxed my-2">
-              Standard flashcards rely on the prefrontal phonological loop, which saturates at 4±1 items and decays rapidly under interference. Anchoring concepts onto familiar room geometry recruits biological <strong>hippocampal place & grid cells</strong> alongside dual-coded visual/acoustic pathways.
+              Your brain isn't built to memorize plain lists—they fade after a few minutes. But you naturally remember where things are in your bedroom or desk! By attaching concepts to real objects in a room with a funny visual story, your brain locks the memory in effortlessly.
             </p>
             <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-              <span class="text-slate-400">Measured Recall Multiplier:</span>
-              <span id="ab-lift-badge" class="text-base font-black text-emerald-400">2.39x Immediate Lift</span>
+              <span class="text-slate-400">Memory Improvement:</span>
+              <span id="ab-lift-badge" class="text-base font-black text-emerald-400">2.39x Easier to Remember</span>
             </div>
           </div>
         </div>
@@ -262,7 +279,7 @@
   <script>
     const BRAND_CONFIG = {
       name: "LociOS",
-      tagline: "Snap Any Room -> Instant Spatial Memory Palace & Acoustic Encoding",
+      tagline: "Turn any room photo into an interactive visual memory guide",
       iconLetter: "L"
     };
 
@@ -522,16 +539,13 @@
         ctx.fillStyle = isSelected ? "#67e8f9" : "#94a3b8";
         ctx.font = "bold 12px sans-serif";
         ctx.fillText(a.object_name, rx + 12, ry + 24);
-        ctx.font = "11px monospace";
-        ctx.fillStyle = "rgba(148, 163, 184, 0.65)";
-        ctx.fillText(`[${ymin},${xmin},${ymax},${xmax}]`, rx + 12, ry + rh - 12);
       });
     }
 
     function renderPalace() {
       document.getElementById("palace-title").textContent = currentPalace.title;
       document.getElementById("grounding-bar").textContent =
-        "Grounded via: " + (currentPalace.grounded_sources || ["Gemini 3.8 Flash Spatial Engine"]).join(" • ");
+        "Sources: " + (currentPalace.grounded_sources || ["Gemini 3.8"]).join(" • ");
 
       const canvasEl = document.getElementById("room-backdrop-canvas");
       const imgEl = document.getElementById("uploaded-room-img");
@@ -579,7 +593,7 @@
 
       const active = currentPalace.anchors[activeAnchorIndex];
       if (active) {
-        document.getElementById("active-station-pill").textContent = `Station #${active.id} (${active.acoustic_cue_hz} Hz TMR Cue)`;
+        document.getElementById("active-station-pill").textContent = `Spot #${active.id} of ${currentPalace.anchors.length}`;
         document.getElementById("active-coords-pill").textContent = `box_2d: [${active.box_2d.join(", ")}]`;
         document.getElementById("active-object").textContent = active.object_name;
         document.getElementById("active-term").textContent = active.concept_term;
@@ -602,10 +616,10 @@
             <span class="w-6 h-6 rounded-full bg-slate-800 text-cyan-300 text-xs font-bold flex items-center justify-center shrink-0">${a.id}</span>
             <div class="truncate">
               <div class="text-xs font-bold truncate">${a.concept_term}</div>
-              <div class="text-[11px] text-slate-400 truncate">Anchored to: ${a.object_name}</div>
+              <div class="text-[11px] text-slate-400 truncate">On: ${a.object_name}</div>
             </div>
           </div>
-          <span class="text-[10px] font-mono text-cyan-400 shrink-0 ml-2">${a.acoustic_cue_hz}Hz</span>
+          <span class="text-[11px] text-cyan-400 shrink-0 ml-2">🔊 Listen</span>
         `;
         listEl.appendChild(row);
       });
@@ -665,7 +679,7 @@
       const btn = document.getElementById("scan-btn");
 
       if (!fileInput.files || !fileInput.files[0]) {
-        alert("Please select a room or desk photo first!");
+        alert("Please choose a photo of a room or desk first!");
         return;
       }
       const topic = topicInput.value.trim() || "High-Yield Neuroscience & Pharmacology";
@@ -679,7 +693,7 @@
       reader.readAsDataURL(fileInput.files[0]);
 
       btn.disabled = true;
-      btn.textContent = "Scanning Room (Gemini 3.8)...";
+      btn.textContent = "Finding Objects in Room...";
 
       try {
         let data;
@@ -706,7 +720,7 @@
 
         currentPalace = {
           title: data.topic_summary || topic,
-          grounded_sources: data.grounded_sources || ["Gemini 3.8 Spatial Vision + Google Search Grounding"],
+          grounded_sources: data.grounded_sources || ["Gemini 3.8 + Google Search"],
           anchors: data.anchors
         };
         activeAnchorIndex = 0;
@@ -714,10 +728,10 @@
         renderPalace();
         selectStation(0, true);
       } catch (err) {
-        alert("Live Gemini scan error: " + err.message);
+        alert("Could not scan photo: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = "Build Palace";
+        btn.textContent = "Create My Room Guide";
       }
     }
 
@@ -738,7 +752,7 @@
       const a = currentPalace.anchors[sprintIndex % currentPalace.anchors.length];
       const box = document.getElementById("sprint-feedback-box");
       box.className = "mt-4 p-4 rounded-xl border border-cyan-500/40 bg-cyan-950/30 text-xs text-cyan-200";
-      box.textContent = `Spatial Sensory Cue: "${a.sensory_mnemonic}"`;
+      box.textContent = `💡 Story Hint: "${a.sensory_mnemonic}"`;
       box.classList.remove("hidden");
     }
 
@@ -748,7 +762,7 @@
       if (!ans) return;
 
       const btn = document.getElementById("sprint-submit-btn");
-      btn.textContent = "Grading...";
+      btn.textContent = "Checking...";
       try {
         const payload = {
           object_name: a.object_name,
@@ -778,10 +792,10 @@
             ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-200"
             : "border-amber-500/50 bg-amber-950/40 text-amber-200"
         }`;
-        box.innerHTML = `<strong>Score: ${data.score}/100</strong> — ${data.feedback}<br/><span class="text-slate-300 mt-1 block">Target: <strong>${a.concept_term}</strong> (${a.concept_definition})</span>`;
+        box.innerHTML = `<strong>Score: ${data.score}/100</strong> — ${data.feedback}<br/><span class="text-slate-300 mt-1 block">Answer: <strong>${a.concept_term}</strong> (${a.concept_definition})</span>`;
         box.classList.remove("hidden");
       } finally {
-        btn.textContent = "Verify with Gemini Socratic Grader";
+        btn.textContent = "Check My Answer";
       }
     }
 
@@ -795,23 +809,23 @@
       stage.innerHTML = `
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase text-cyan-400">Live Micro-Trial Quiz (Post-Distractor Check)</span>
-            <span class="text-xs text-slate-400">Select the concept matched to each cue:</span>
+            <span class="text-xs font-bold uppercase text-cyan-400">Quick Memory Check</span>
+            <span class="text-xs text-slate-400">Pick the answer that matches each clue:</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <div class="text-xs font-bold text-slate-400 mb-2">Condition A (Rote Flashcard Pair #2): What did Card #2 define?</div>
+              <div class="text-xs font-bold text-slate-400 mb-2">1. Plain Flashcard #2 (No picture clue): What was on Card #2?</div>
               <select id="ab-q1" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                <option value="0">Select recalled term...</option>
+                <option value="0">Choose your answer...</option>
                 <option value="0">Atropine (Muscarinic blocker)</option>
                 <option value="1">Lambert-Eaton Syndrome (Ca2+ channel)</option>
                 <option value="0">Raft Consensus</option>
               </select>
             </div>
             <div class="p-3.5 rounded-xl bg-slate-900 border border-cyan-500/40">
-              <div class="text-xs font-bold text-cyan-300 mb-2">Condition B (Spatial Anchor: Steaming Coffee Carafe + Dandelion):</div>
+              <div class="text-xs font-bold text-cyan-300 mb-2">2. Room Object Clue (Steaming Coffee Carafe + Dandelion):</div>
               <select id="ab-q2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                <option value="0">Select recalled term...</option>
+                <option value="0">Choose your answer...</option>
                 <option value="1">Dantrolene (RyR1 Malignant Hyperthermia blocker)</option>
                 <option value="0">Pralidoxime (2-PAM)</option>
                 <option value="0">Levodopa / Carbidopa</option>
@@ -819,7 +833,7 @@
             </div>
           </div>
           <button onclick="scoreABTrial()" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition">
-            Compute Personal Spatial Lift Multiplier
+            See My Result
           </button>
         </div>
       `;
@@ -836,7 +850,7 @@
       document.getElementById("ab-bar-control-label").textContent = `${controlPct}%`;
       document.getElementById("ab-bar-spatial").style.width = `${spatialPct}%`;
       document.getElementById("ab-bar-spatial-label").textContent = `${spatialPct}%`;
-      document.getElementById("ab-lift-badge").textContent = `${lift}x Immediate Lift`;
+      document.getElementById("ab-lift-badge").textContent = `${lift}x Easier to Remember`;
     }
 
     function switchMode(mode) {

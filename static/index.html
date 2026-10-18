@@ -1,58 +1,220 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Roomory — There’s always room to remember.</title>
   <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes pulse-ring {
-      0% { transform: scale(0.92); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.85); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 14px rgba(56, 189, 248, 0); }
-      100% { transform: scale(0.92); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    :root {
+      --bg-lilac: #F3EEFF;
+      --ink: #141414;
+      --yellow: #FFD93D;
+      --mint: #8EEBC8;
+      --pink: #FFA8CB;
+      --lilac: #C4B2FF;
+      --orange: #FF9A5C;
     }
-    .pin-pulse { animation: pulse-ring 2s infinite; }
-    .bbox-overlay { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    body {
+      background-color: var(--bg-lilac);
+      background-image: radial-gradient(rgba(20, 20, 20, 0.08) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: var(--ink);
+      font-family: 'Lexend', sans-serif;
+    }
+
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Baloo 2', cursive, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    /* Sticker Book Cards, Buttons & Inputs */
+    .sticker-card {
+      background: #FFFFFF;
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+      border-radius: 22px;
+    }
+
+    .sticker-block {
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+      border-radius: 18px;
+    }
+
+    .sticker-pill {
+      border: 2.5px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      border-radius: 9999px;
+    }
+
+    .btn-primary {
+      background-color: var(--yellow);
+      color: var(--ink);
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+      border-radius: 16px;
+      font-weight: 700;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translate(-1.5px, -1.5px);
+      box-shadow: 6.5px 6.5px 0 var(--ink);
+    }
+    .btn-primary:active:not(:disabled) {
+      transform: translate(3px, 3px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: var(--ink);
+      border: 2.5px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      border-radius: 14px;
+      font-weight: 600;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #FAF7FF;
+      transform: translate(-1px, -1px);
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+    .btn-secondary:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .sticker-input {
+      background: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      border-radius: 14px;
+      color: var(--ink);
+    }
+    .sticker-input:focus {
+      outline: none;
+      background: #FFFDF2;
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    /* Tilted "room" sticker word in headline */
+    .room-word-sticker {
+      display: inline-block;
+      background-color: var(--yellow);
+      border: 3px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      padding: 0 12px 2px 12px;
+      border-radius: 12px;
+      transform: rotate(-3.5deg);
+      line-height: 1.05;
+      margin: 0 3px;
+    }
+
+    /* White Speech Bubble with 3px outline, hard shadow, and tail */
+    .speech-bubble {
+      position: relative;
+      background: #FFFFFF;
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+      border-radius: 20px;
+    }
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      bottom: -17px;
+      left: 30px;
+      border-width: 16px 14px 0 0;
+      border-style: solid;
+      border-color: var(--ink) transparent transparent transparent;
+    }
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -11px;
+      left: 33px;
+      border-width: 12px 10px 0 0;
+      border-style: solid;
+      border-color: #FFFFFF transparent transparent transparent;
+    }
+
+    /* Round Sticker Pins (1 yellow, 2 mint, 3 pink, 4 lilac, 5 orange) */
+    .pin-sticker {
+      border: 3px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      color: var(--ink);
+      font-family: 'Baloo 2', cursive, sans-serif;
+      font-weight: 800;
+      border-radius: 9999px;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+    }
+    .pin-sticker:hover {
+      transform: translate(-50%, -50%) scale(1.12) rotate(-5deg);
+    }
+    .pin-sticker-active {
+      transform: translate(-50%, -50%) scale(1.32) rotate(-10deg) !important;
+      box-shadow: 6px 6px 0 var(--ink) !important;
+      z-index: 30 !important;
+    }
+
+    .bbox-overlay {
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-400 selection:text-slate-950">
+<body class="min-h-screen selection:bg-[#FFD93D] selection:text-[#141414]">
 
   <!-- TOP HEADER & 3-SCREEN FLOW BAR -->
-  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
+  <header class="border-b-[3px] border-[#141414] bg-white sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
       <!-- Brand -->
       <button onclick="switchScreen('start')" class="flex items-center gap-3 text-left group">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition" id="brand-icon">R</div>
+        <div class="w-11 h-11 rounded-2xl bg-[#FFD93D] border-[3px] border-[#141414] shadow-[4px_4px_0_#141414] flex items-center justify-center font-display text-2xl text-[#141414] group-hover:-rotate-6 transition" id="brand-icon">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
+          </svg>
+        </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 id="brand-name" class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-indigo-300 bg-clip-text text-transparent">Roomory</h1>
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">App Check Protected</span>
+            <h1 id="brand-name" class="text-2xl font-display text-[#141414] leading-none">Roomory</h1>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-[#8EEBC8] text-[#141414] border-2 border-[#141414] rounded-full inline-flex items-center gap-1">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              App Check
+            </span>
           </div>
-          <p id="brand-tagline" class="text-xs text-slate-400">There’s always room to remember.</p>
+          <p id="brand-tagline" class="text-xs font-medium text-neutral-700 mt-0.5">There’s always room to remember.</p>
         </div>
       </button>
 
-      <!-- 3-Screen Navigation -->
-      <nav aria-label="Steps" class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button onclick="switchScreen('start')" id="nav-start" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 transition">
-          1. Start
+      <!-- 3-Screen Navigation: Start -> Your Room -> Test Yourself -->
+      <nav aria-label="Steps" class="flex items-center gap-1.5 bg-[#F3EEFF] p-1.5 rounded-2xl border-[2.5px] border-[#141414] shadow-[3px_3px_0_#141414]">
+        <button onclick="switchScreen('start')" id="nav-start" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#FFD93D] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_#141414] transition inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>1. Start</span>
         </button>
-        <span class="text-slate-600 px-1 text-xs">→</span>
-        <button onclick="switchScreen('room')" id="nav-room" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
-          2. Your Room
+        <svg class="w-3.5 h-3.5 text-[#141414]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        <button onclick="switchScreen('room')" id="nav-room" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#141414] hover:bg-white border-2 border-transparent transition inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>2. Your Room</span>
         </button>
-        <span class="text-slate-600 px-1 text-xs">→</span>
-        <button onclick="switchScreen('quiz')" id="nav-quiz" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
-          3. Test Yourself
+        <svg class="w-3.5 h-3.5 text-[#141414]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        <button onclick="switchScreen('quiz')" id="nav-quiz" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#141414] hover:bg-white border-2 border-transparent transition inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>3. Test Yourself</span>
         </button>
       </nav>
 
-      <!-- Real Quiz Score Pill -->
-      <div class="flex items-center gap-3 bg-slate-950/90 border border-slate-800 px-3.5 py-1.5 rounded-xl">
+      <!-- Real Quiz Score Pill (Starts at –) -->
+      <div class="flex items-center gap-3 bg-[#C4B2FF] border-[2.5px] border-[#141414] shadow-[3px_3px_0_#141414] px-3.5 py-1.5 rounded-xl">
         <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400">Your Quiz Score</div>
-          <div id="header-score-badge" class="text-sm font-black text-cyan-400">–</div>
+          <div class="text-[10px] font-bold uppercase tracking-wider text-[#141414]">Quiz Score</div>
+          <div id="header-score-badge" class="text-sm font-display text-[#141414] leading-tight">–</div>
         </div>
       </div>
     </div>
@@ -61,31 +223,34 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
 
     <!-- ON-PAGE MESSAGE BANNER (Replaces all alert() dialogs) -->
-    <div id="page-banner" class="hidden mb-6 p-4 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-amber-200 text-sm flex items-center justify-between gap-4">
-      <span id="page-banner-text"></span>
-      <button onclick="hideBanner()" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 shrink-0">Dismiss</button>
+    <div id="page-banner" class="hidden mb-6 p-4 sticker-block bg-[#FFD93D] text-[#141414] text-sm font-medium flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="page-banner-text"></span>
+      </div>
+      <button onclick="hideBanner()" class="btn-secondary px-3 py-1 text-xs shrink-0">Dismiss</button>
     </div>
 
-    <!-- GENERATION PROGRESS OVERLAY (Hides old room while scanning) -->
-    <section id="loading-screen" class="hidden max-w-xl mx-auto my-12 bg-slate-900 border border-cyan-500/40 rounded-3xl p-8 text-center shadow-2xl">
-      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center">
-        <div class="w-7 h-7 border-3 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+    <!-- GENERATION PROGRESS SCREEN (Hides old room and shows progress steps) -->
+    <section id="loading-screen" class="hidden max-w-xl mx-auto my-10 sticker-card p-8 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#FFD93D] border-[3px] border-[#141414] shadow-[4px_4px_0_#141414] flex items-center justify-center">
+        <div class="w-7 h-7 border-[3px] border-[#141414] border-t-transparent rounded-full animate-spin"></div>
       </div>
-      <h2 class="text-xl font-extrabold text-white" id="loading-title">Building Your Memory Room…</h2>
-      <p class="text-xs text-slate-400 mt-1">This usually takes about 8–15 seconds.</p>
+      <h2 class="text-2xl font-display text-[#141414]" id="loading-title">Making Your Sticker Room…</h2>
+      <p class="text-xs font-medium text-neutral-600 mt-1">Takes about 8–15 seconds.</p>
 
       <div class="mt-6 space-y-3 text-left max-w-sm mx-auto">
-        <div id="step-progress-1" class="flex items-center gap-3 p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-xs font-semibold text-cyan-200">
-          <span class="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 font-black flex items-center justify-center text-[11px]">1</span>
-          <span>Finding 5 objects in your room photo…</span>
+        <div id="step-progress-1" class="flex items-center gap-3 p-3 rounded-xl bg-[#FFD93D] border-[2.5px] border-[#141414] shadow-[3px_3px_0_#141414] text-xs font-bold text-[#141414]">
+          <span class="w-6 h-6 rounded-full bg-white border-2 border-[#141414] font-display flex items-center justify-center text-xs">1</span>
+          <span>Finding objects…</span>
         </div>
-        <div id="step-progress-2" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400">
-          <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-[11px]">2</span>
-          <span>Researching key facts & definitions…</span>
+        <div id="step-progress-2" class="flex items-center gap-3 p-3 rounded-xl bg-white border-[2.5px] border-[#141414] text-xs font-medium text-neutral-500">
+          <span class="w-6 h-6 rounded-full bg-[#F3EEFF] border-2 border-[#141414] font-display flex items-center justify-center text-xs text-[#141414]">2</span>
+          <span>Picking 5 key facts…</span>
         </div>
-        <div id="step-progress-3" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400">
-          <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-[11px]">3</span>
-          <span>Writing unforgettable visual stories…</span>
+        <div id="step-progress-3" class="flex items-center gap-3 p-3 rounded-xl bg-white border-[2.5px] border-[#141414] text-xs font-medium text-neutral-500">
+          <span class="w-6 h-6 rounded-full bg-[#F3EEFF] border-2 border-[#141414] font-display flex items-center justify-center text-xs text-[#141414]">3</span>
+          <span>Writing stories…</span>
         </div>
       </div>
     </section>
@@ -94,102 +259,152 @@
          SCREEN 1: START
          ========================================================== -->
     <section id="screen-start" class="space-y-8">
-      <!-- Hero + Big Upload Button -->
-      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 border border-slate-800 rounded-3xl p-6 md:p-8 text-center max-w-3xl mx-auto shadow-xl">
-        <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 mb-3">
-          Visual Room Memory
-        </span>
-        <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">
-          Remember anything by pinning it to objects in your room.
+      <!-- Hero Card with Tilted Yellow "room" Sticker Box -->
+      <div class="sticker-card p-6 md:p-9 text-center max-w-3xl mx-auto relative overflow-hidden">
+        <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3 py-1 sticker-pill bg-[#C4B2FF] text-[#141414] mb-4">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>
+          <span>Visual Sticker Memory</span>
+        </div>
+
+        <h2 class="text-3xl md:text-4xl font-display text-[#141414] leading-tight">
+          Remember anything by sticking it to objects in your <span class="room-word-sticker">room</span>.
         </h2>
-        <p class="text-sm text-slate-300 mt-2 max-w-xl mx-auto">
-          Upload a photo of your desk or bedroom—or pick a sample room below—and Roomory turns 5 everyday objects into memorable mini-stories you can quiz yourself on.
+
+        <p class="text-sm font-medium text-neutral-700 mt-3 max-w-xl mx-auto">
+          Snap a photo of your desk or bedroom—or try a sample room below—and turn 5 objects into fun sticker stories you will actually remember.
         </p>
 
         <div class="mt-6">
-          <button onclick="toggleUploadForm()" id="big-upload-cta" class="px-6 py-3.5 rounded-2xl text-sm md:text-base font-extrabold bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/25 inline-flex items-center gap-2">
-            <span>📷 Upload a photo of your room</span>
+          <button onclick="toggleUploadForm()" id="big-upload-cta" class="btn-primary px-6 py-3.5 text-sm md:text-base inline-flex items-center gap-2.5">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+            <span>Upload a photo of your room</span>
           </button>
         </div>
 
         <!-- Expandable Upload Form -->
-        <div id="upload-form-panel" class="hidden mt-6 pt-6 border-t border-slate-800 text-left grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="upload-form-panel" class="hidden mt-6 pt-6 border-t-[2.5px] border-[#141414] text-left grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label for="custom-image" class="block text-xs font-bold text-slate-200 mb-1.5">1. Choose your room photo</label>
-            <input type="file" id="custom-image" accept="image/*" class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 bg-slate-950 border border-slate-800 rounded-xl p-1.5" />
+            <label for="custom-image" class="block text-xs font-bold text-[#141414] mb-1.5">1. Choose your room photo</label>
+            <input type="file" id="custom-image" accept="image/*" class="w-full text-xs sticker-input p-1.5 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-2 file:border-[#141414] file:text-xs file:font-bold file:bg-[#FFD93D] file:text-[#141414]" />
           </div>
           <div>
-            <label for="custom-topic" class="block text-xs font-bold text-slate-200 mb-1.5">2. What do you want to remember?</label>
-            <input type="text" id="custom-topic" placeholder="e.g., Everyday Spanish, Planets, Grocery list..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400" />
+            <label for="custom-topic" class="block text-xs font-bold text-[#141414] mb-1.5">2. What do you want to remember?</label>
+            <input type="text" id="custom-topic" placeholder="e.g., Spanish words, Planets, Grocery list..." class="w-full text-xs sticker-input px-3 py-2.5" />
           </div>
           <div>
-            <label for="custom-notes" class="block text-xs font-bold text-slate-200 mb-1.5">3. Specific items (optional)</label>
-            <input type="text" id="custom-notes" placeholder="Leave blank and AI will pick 5 items" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400" />
+            <label for="custom-notes" class="block text-xs font-bold text-[#141414] mb-1.5">3. Specific items (optional)</label>
+            <input type="text" id="custom-notes" placeholder="Leave blank and AI will pick 5 items" class="w-full text-xs sticker-input px-3 py-2.5" />
           </div>
           <div class="md:col-span-3 flex justify-end pt-1">
-            <button onclick="runLiveGeminiScan()" id="scan-btn" class="px-5 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-md">
-              Build My Memory Room →
+            <button onclick="runLiveGeminiScan()" id="scan-btn" class="btn-primary px-5 py-2.5 text-xs inline-flex items-center gap-2">
+              <span>Create My Sticker Room</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- "How it works" Steps: Yellow, Mint, and Pink Sticker Blocks -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="sticker-block bg-[#FFD93D] p-4 flex items-start gap-3.5">
+          <div class="w-9 h-9 rounded-full bg-white border-[2.5px] border-[#141414] shadow-[2px_2px_0_#141414] flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </div>
+          <div>
+            <div class="text-sm font-display text-[#141414]">1. Pick or Snap a Room</div>
+            <p class="text-xs font-medium text-[#141414]/80 mt-0.5">Choose a sample room below or upload a photo of your own desk.</p>
+          </div>
+        </div>
+
+        <div class="sticker-block bg-[#8EEBC8] p-4 flex items-start gap-3.5">
+          <div class="w-9 h-9 rounded-full bg-white border-[2.5px] border-[#141414] shadow-[2px_2px_0_#141414] flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="text-sm font-display text-[#141414]">2. Tap the 5 Sticker Pins</div>
+            <p class="text-xs font-medium text-[#141414]/80 mt-0.5">Collect all 5 stickers by reading and hearing each silly object story.</p>
+          </div>
+        </div>
+
+        <div class="sticker-block bg-[#FFA8CB] p-4 flex items-start gap-3.5">
+          <div class="w-9 h-9 rounded-full bg-white border-[2.5px] border-[#141414] shadow-[2px_2px_0_#141414] flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div>
+            <div class="text-sm font-display text-[#141414]">3. Test Yourself</div>
+            <p class="text-xs font-medium text-[#141414]/80 mt-0.5">Look at the highlighted sticker pin on the photo and recall the idea.</p>
           </div>
         </div>
       </div>
 
       <!-- 3 Sample Rooms with Real Photos & Everyday Topics -->
       <div>
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-300">Or jump right in with a sample room:</h3>
-          <span class="text-xs text-slate-400">Click any room photo to explore its 5 pins</span>
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h3 class="text-xl font-display text-[#141414]">Or open a sample sticker room:</h3>
+          <span class="text-xs font-semibold text-neutral-700">Click any room card to start collecting pins</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Sample 1: Spanish Words (Study Desk) -->
-          <button onclick="selectPresetAndOpen('spanish')" id="preset-card-spanish" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
-            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+          <button onclick="selectPresetAndOpen('spanish')" id="preset-card-spanish" class="group text-left sticker-card overflow-hidden transition hover:-translate-y-1 flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden border-b-[3px] border-[#141414]">
               <img src="/rooms/spanish_desk.jpg" alt="Cozy Study Desk" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
-                5 Pins · Study Desk
+              <span class="absolute top-3 left-3 px-3 py-1 sticker-pill bg-[#FFD93D] text-[11px] font-bold text-[#141414]">
+                5 Stickers · Study Desk
               </span>
             </div>
-            <div class="p-4 flex-1 flex flex-col justify-between">
+            <div class="p-4 flex-1 flex flex-col justify-between bg-white">
               <div>
-                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Everyday Spanish Words</div>
-                <p class="text-xs text-slate-400 mt-1">Learn 5 useful Spanish words pinned to a coffee mug, notebook, plant, headphones, and lamp.</p>
+                <div class="text-lg font-display text-[#141414]">Everyday Spanish Words</div>
+                <p class="text-xs text-neutral-700 mt-1">Learn 5 useful Spanish verbs stuck to a mug, notebook, plant, headphones, and lamp.</p>
               </div>
-              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+              <div class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#141414]">
+                <span>Open sticker room</span>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
             </div>
           </button>
 
           <!-- Sample 2: Planets (Cozy Bedroom) -->
-          <button onclick="selectPresetAndOpen('planets')" id="preset-card-planets" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
-            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+          <button onclick="selectPresetAndOpen('planets')" id="preset-card-planets" class="group text-left sticker-card overflow-hidden transition hover:-translate-y-1 flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden border-b-[3px] border-[#141414]">
               <img src="/rooms/planets_bedroom.jpg" alt="Cozy Bedroom Corner" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
-                5 Pins · Bedroom Corner
+              <span class="absolute top-3 left-3 px-3 py-1 sticker-pill bg-[#8EEBC8] text-[11px] font-bold text-[#141414]">
+                5 Stickers · Bedroom
               </span>
             </div>
-            <div class="p-4 flex-1 flex flex-col justify-between">
+            <div class="p-4 flex-1 flex flex-col justify-between bg-white">
               <div>
-                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Solar System Planets</div>
-                <p class="text-xs text-slate-400 mt-1">Remember Mercury, Venus, Mars, Jupiter, and Saturn anchored around a bedroom corner.</p>
+                <div class="text-lg font-display text-[#141414]">Solar System Planets</div>
+                <p class="text-xs text-neutral-700 mt-1">Remember Mercury, Venus, Mars, Jupiter, and Saturn around a cozy bedroom corner.</p>
               </div>
-              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+              <div class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#141414]">
+                <span>Open sticker room</span>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
             </div>
           </button>
 
           <!-- Sample 3: Shopping List (Kitchen Counter) -->
-          <button onclick="selectPresetAndOpen('shopping')" id="preset-card-shopping" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
-            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+          <button onclick="selectPresetAndOpen('shopping')" id="preset-card-shopping" class="group text-left sticker-card overflow-hidden transition hover:-translate-y-1 flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden border-b-[3px] border-[#141414]">
               <img src="/rooms/kitchen_shopping.jpg" alt="Modern Kitchen Counter" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
-                5 Pins · Kitchen Counter
+              <span class="absolute top-3 left-3 px-3 py-1 sticker-pill bg-[#FFA8CB] text-[11px] font-bold text-[#141414]">
+                5 Stickers · Kitchen
               </span>
             </div>
-            <div class="p-4 flex-1 flex flex-col justify-between">
+            <div class="p-4 flex-1 flex flex-col justify-between bg-white">
               <div>
-                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Weekend Taco Night List</div>
-                <p class="text-xs text-slate-400 mt-1">Never forget avocados, limes, cilantro, tortillas, and hot sauce using your kitchen counter.</p>
+                <div class="text-lg font-display text-[#141414]">Weekend Taco Night List</div>
+                <p class="text-xs text-neutral-700 mt-1">Never forget avocados, tortillas, limes, cilantro, and hot sauce on the kitchen counter.</p>
               </div>
-              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+              <div class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#141414]">
+                <span>Open sticker room</span>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
             </div>
           </button>
         </div>
@@ -200,81 +415,105 @@
          SCREEN 2: YOUR ROOM
          ========================================================== -->
     <section id="screen-room" class="hidden space-y-5">
-      <!-- Quick room switcher bar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3">
+      <!-- Top Bar: Switch Room + 5 Sticker Dots ("1 of 5 collected") + Test Yourself CTA -->
+      <div class="sticker-card px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-bold text-slate-400 mr-1">Switch Room:</span>
-          <button onclick="loadPreset('spanish')" id="preset-spanish" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 transition">
-            🇪🇸 Spanish Words
+          <span class="text-xs font-bold text-[#141414] mr-1">Room:</span>
+          <button onclick="loadPreset('spanish')" id="preset-spanish" class="btn-primary px-3 py-1.5 text-xs">
+            Spanish Words
           </button>
-          <button onclick="loadPreset('planets')" id="preset-planets" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            🪐 Planets
+          <button onclick="loadPreset('planets')" id="preset-planets" class="btn-secondary px-3 py-1.5 text-xs">
+            Planets
           </button>
-          <button onclick="loadPreset('shopping')" id="preset-shopping" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            🛒 Shopping List
+          <button onclick="loadPreset('shopping')" id="preset-shopping" class="btn-secondary px-3 py-1.5 text-xs">
+            Shopping List
           </button>
-          <button onclick="openUploadFromRoom()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-cyan-300 border border-cyan-500/30 hover:bg-slate-700 transition">
-            + Upload Your Photo
+          <button onclick="openUploadFromRoom()" class="btn-secondary px-3 py-1.5 text-xs inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            <span>Upload Photo</span>
           </button>
         </div>
-        <button onclick="switchScreen('quiz')" class="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow">
-          Test Yourself on This Room →
+
+        <!-- 5 Sticker Dots Progress ("1 of 5 collected") -->
+        <div class="flex items-center gap-2.5 bg-[#F3EEFF] px-3.5 py-1.5 rounded-full border-[2.5px] border-[#141414]">
+          <div id="collected-dots" class="flex items-center gap-1.5"></div>
+          <span id="collected-label" class="text-xs font-bold text-[#141414]">1 of 5 collected</span>
+        </div>
+
+        <button onclick="switchScreen('quiz')" class="btn-primary px-4 py-2 text-xs inline-flex items-center gap-1.5">
+          <span>Test Yourself</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left: Interactive Room Photo with Numbered Pins -->
-        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col">
+        <!-- Left: Interactive Room Photo with 5 Colored Round Sticker Pins -->
+        <div class="lg:col-span-7 sticker-card p-4 flex flex-col">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400">Step 2 · Click Each Pin in Order</span>
-              <h2 class="text-lg font-extrabold text-white" id="palace-title">Everyday Spanish Words</h2>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Tap Each Colored Sticker Pin</span>
+              <h2 class="text-xl font-display text-[#141414]" id="palace-title">Everyday Spanish Words</h2>
             </div>
-            <button onclick="playFullRoomTour()" id="tour-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 hover:bg-indigo-500/30 transition">
-              🔊 Auto-Play All 5 Stories
+            <button onclick="playFullRoomTour()" id="tour-btn" class="btn-secondary px-3.5 py-1.5 text-xs inline-flex items-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              <span>Play All 5 Stories</span>
             </button>
           </div>
 
-          <div class="relative w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 aspect-[16/10]" id="canvas-container">
+          <div class="relative w-full overflow-hidden rounded-2xl border-[3px] border-[#141414] bg-neutral-100 aspect-[16/10]" id="canvas-container">
             <img id="room-photo-img" src="/rooms/spanish_desk.jpg" class="w-full h-full object-cover" alt="Memory Room" />
             <div id="pins-layer" class="absolute inset-0"></div>
           </div>
 
-          <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+          <div class="mt-3 flex flex-wrap items-center justify-between text-xs font-medium text-neutral-700 gap-2">
             <div id="grounding-bar">AI-generated — double-check</div>
-            <span class="text-cyan-300 font-medium">👆 Click pins 1 to 5 to see & hear each memory story</span>
+            <span class="inline-flex items-center gap-1 font-semibold text-[#141414]">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg>
+              Click stickers 1 to 5 to hear each story
+            </span>
           </div>
         </div>
 
-        <!-- Right: Selected Pin Story Card + Pin List -->
+        <!-- Right: Selected Sticker Card + Speech Bubble Story + Sticker List -->
         <div class="lg:col-span-5 flex flex-col gap-4">
-          <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-cyan-500/40 rounded-2xl p-5 shadow-xl">
+          <div id="active-detail-card" class="sticker-card p-5 bg-[#FFFDF7]">
             <div class="flex items-center justify-between mb-2">
-              <span id="active-station-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-400 text-slate-950">Pin #1 of 5</span>
-              <span class="text-xs text-slate-400">Object: <strong id="active-object" class="text-white">Yellow Coffee Mug</strong></span>
+              <span id="active-station-pill" class="px-3 py-0.5 sticker-pill bg-[#FFD93D] text-xs font-bold text-[#141414]">Sticker #1 of 5</span>
+              <span class="text-xs font-semibold text-neutral-700">Object: <strong id="active-object" class="text-[#141414]">Yellow Coffee Mug</strong></span>
             </div>
 
-            <h3 id="active-term" class="text-xl font-extrabold text-white mt-1">Select a Pin</h3>
-            <p id="active-def" class="text-sm text-slate-200 mt-1 leading-relaxed"></p>
+            <h3 id="active-term" class="text-2xl font-display text-[#141414] mt-1">Select a Pin</h3>
+            <p id="active-def" class="text-xs font-medium text-neutral-700 mt-1 leading-relaxed"></p>
 
-            <div class="mt-4 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mb-1">💡 Silly Story to Picture</div>
-              <p id="active-mnemonic" class="text-xs text-slate-100 leading-relaxed italic"></p>
+            <!-- White Speech Bubble with Outline and Tail -->
+            <div class="mt-4 mb-5 speech-bubble p-4">
+              <div class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Picture This Story</span>
+              </div>
+              <p id="active-mnemonic" class="text-xs font-semibold text-[#141414] leading-relaxed"></p>
             </div>
 
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-1">
-              <button onclick="replayActiveAudio()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
-                🔊 Hear Sound & Story
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 pt-1">
+              <button onclick="replayActiveAudio()" class="btn-primary px-3.5 py-2 text-xs inline-flex items-center gap-1.5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                <span>Hear Sound & Story</span>
               </button>
               <div class="flex items-center gap-1.5">
-                <button onclick="stepStation(-1)" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">← Prev</button>
-                <button onclick="stepStation(1)" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Next Pin →</button>
+                <button onclick="stepStation(-1)" class="btn-secondary px-3 py-2 text-xs inline-flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  <span>Prev</span>
+                </button>
+                <button onclick="stepStation(1)" class="btn-secondary px-3 py-2 text-xs inline-flex items-center gap-1">
+                  <span>Next</span>
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
               </div>
             </div>
           </div>
 
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex-1">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">All 5 Objects in This Room</h4>
+          <div class="sticker-card p-4 flex-1">
+            <h4 class="text-sm font-display text-[#141414] mb-2.5">All 5 Stickers in This Room</h4>
             <div id="station-list" class="space-y-2"></div>
           </div>
         </div>
@@ -282,87 +521,100 @@
     </section>
 
     <!-- ==========================================================
-         SCREEN 3: TEST YOURSELF (Shows room photo + highlighted pin + optional 60s timer)
+         SCREEN 3: TEST YOURSELF (Room photo + highlighted pin + optional 60s timer)
          ========================================================== -->
     <section id="screen-quiz" class="hidden space-y-5">
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 rounded-2xl px-4 py-3">
+      <div class="sticker-card px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Step 3 · Test Yourself</span>
-          <h2 class="text-lg font-extrabold text-white">Look at the highlighted pin and recall what’s there</h2>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Step 3 · Test Yourself</span>
+          <h2 class="text-xl font-display text-[#141414]">Look at the big tilted sticker pin and recall what’s there</h2>
         </div>
 
         <!-- Optional 60s Timed Challenge Toggle (uses current room & real countdown timer) -->
-        <div class="flex items-center gap-3">
-          <div id="timer-pill" class="hidden px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-extrabold">
-            ⏱️ <span id="timer-seconds">60</span>s left
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div id="timer-pill" class="hidden px-3.5 py-1.5 sticker-pill bg-[#FF9A5C] text-[#141414] text-xs font-bold inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg>
+            <span><span id="timer-seconds">60</span>s left</span>
           </div>
-          <button onclick="toggleTimedChallenge()" id="timed-mode-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/40 hover:bg-amber-400/25 transition">
-            ⚡ Start 60s Timed Challenge
+          <button onclick="toggleTimedChallenge()" id="timed-mode-btn" class="btn-secondary px-3.5 py-1.5 text-xs inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Start 60s Timed Challenge</span>
           </button>
-          <button onclick="switchScreen('room')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
-            ← Back to Room
+          <button onclick="switchScreen('room')" class="btn-secondary px-3 py-1.5 text-xs inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back to Room</span>
           </button>
         </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left: Room Photo with ONLY the Current Quiz Pin Highlighted -->
-        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <!-- Left: Room Photo with Current Quiz Sticker Highlighted -->
+        <div class="lg:col-span-6 sticker-card p-4">
           <div class="flex items-center justify-between mb-2.5 text-xs">
-            <span class="font-bold text-cyan-300" id="quiz-room-title">Everyday Spanish Words</span>
-            <span class="text-slate-400" id="quiz-pin-counter">Pin 1 of 5</span>
+            <span class="font-display text-base text-[#141414]" id="quiz-room-title">Everyday Spanish Words</span>
+            <span class="px-2.5 py-0.5 sticker-pill bg-[#F3EEFF] font-bold text-[#141414]" id="quiz-pin-counter">Sticker 1 of 5</span>
           </div>
-          <div class="relative w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 aspect-[16/10]">
+          <div class="relative w-full overflow-hidden rounded-2xl border-[3px] border-[#141414] bg-neutral-100 aspect-[16/10]">
             <img id="quiz-room-img" src="/rooms/spanish_desk.jpg" class="w-full h-full object-cover" alt="Quiz Room" />
             <div id="quiz-pins-layer" class="absolute inset-0"></div>
           </div>
-          <p class="text-xs text-slate-400 mt-2.5">
-            Look at the glowing pin on the <strong id="quiz-object-inline" class="text-white">Yellow Coffee Mug</strong>. What did we attach to it?
+          <p class="text-xs font-medium text-neutral-700 mt-3">
+            Look at the tilted sticker on the <strong id="quiz-object-inline" class="text-[#141414]">Yellow Coffee Mug</strong>. What did we stick to it?
           </p>
         </div>
 
         <!-- Right: Question, Answer Box, Feedback, and Score -->
-        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+        <div class="lg:col-span-6 sticker-card p-5 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
-              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <span id="quiz-object-pill" class="px-3 py-1 sticker-pill bg-[#FFD93D] text-xs font-bold text-[#141414]">
                 Object: <span id="sprint-object">#1 Yellow Coffee Mug</span>
               </span>
-              <div class="text-right">
-                <span class="text-xs text-slate-400 mr-1.5">Score:</span>
-                <span id="sprint-score-badge" class="text-base font-black text-cyan-400">–</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-neutral-600">Score:</span>
+                <span id="sprint-score-badge" class="text-base font-display text-[#141414]">–</span>
               </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
-              <p id="sprint-question" class="text-base font-bold text-white leading-snug"></p>
-              <div class="mt-2.5 flex flex-wrap items-center gap-3 text-xs">
-                <button onclick="playSprintCueTone()" class="text-indigo-300 hover:underline font-semibold">🎵 Play Sound Clue</button>
-                <button onclick="showSprintHint()" class="text-cyan-300 hover:underline font-semibold">💡 Show Story Hint</button>
+            <div class="speech-bubble p-4 mb-6">
+              <p id="sprint-question" class="text-base font-display text-[#141414] leading-snug"></p>
+              <div class="mt-2.5 flex flex-wrap items-center gap-4 text-xs">
+                <button onclick="playSprintCueTone()" class="font-bold text-[#141414] hover:underline inline-flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <span>Play Sound Clue</span>
+                </button>
+                <button onclick="showSprintHint()" class="font-bold text-[#141414] hover:underline inline-flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                  <span>Show Story Hint</span>
+                </button>
               </div>
             </div>
 
             <div class="space-y-3">
-              <textarea id="sprint-input" rows="3" placeholder="Type the word or idea in your own words..." class="w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm text-white focus:outline-none focus:border-cyan-400"></textarea>
+              <textarea id="sprint-input" rows="3" placeholder="Type the word or idea in your own words..." class="w-full sticker-input p-3 text-sm"></textarea>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <button onclick="prevSprintCard()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">← Previous</button>
+                <button onclick="prevSprintCard()" class="btn-secondary px-3 py-2 text-xs inline-flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  <span>Previous</span>
+                </button>
                 <div class="flex gap-2">
-                  <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="px-5 py-2 rounded-xl text-xs font-extrabold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition shadow">
+                  <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="btn-primary px-5 py-2 text-xs">
                     Check Answer
                   </button>
-                  <button onclick="nextSprintCard()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
-                    Next Pin →
+                  <button onclick="nextSprintCard()" class="btn-secondary px-3.5 py-2 text-xs inline-flex items-center gap-1">
+                    <span>Next Pin</span>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div id="sprint-feedback-box" class="hidden mt-4 p-4 rounded-xl border text-xs"></div>
+            <div id="sprint-feedback-box" class="hidden mt-4 p-4 sticker-block text-xs"></div>
           </div>
 
-          <div class="mt-6 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div class="mt-6 pt-3 border-t-2 border-[#141414]/15 flex items-center justify-between text-xs font-medium text-neutral-600">
             <span>Tip: You don’t need exact wording—just the main idea!</span>
-            <button onclick="resetQuizScore()" class="text-slate-400 hover:text-white underline">Reset score</button>
+            <button onclick="resetQuizScore()" class="font-bold text-[#141414] hover:underline">Reset score</button>
           </div>
         </div>
       </div>
@@ -376,6 +628,9 @@
       tagline: "There’s always room to remember.",
       iconLetter: "R"
     };
+
+    // Sticker palette per pin (1 yellow, 2 mint, 3 pink, 4 lilac, 5 orange)
+    const PIN_COLORS = ["#FFD93D", "#8EEBC8", "#FFA8CB", "#C4B2FF", "#FF9A5C"];
 
     // Short titles, real room photos, and everyday topics
     const PRESETS = {
@@ -554,6 +809,7 @@
 
     let currentPalace = PRESETS.spanish;
     let activeAnchorIndex = 0;
+    let collectedPins = new Set([0]);
     let sprintIndex = 0;
     let sprintCorrect = 0;
     let sprintTotal = 0;
@@ -564,12 +820,14 @@
     let timeRemaining = 60;
     let timedModeActive = false;
 
+    function getPinColor(idx) {
+      return PIN_COLORS[idx % PIN_COLORS.length];
+    }
+
     function showBanner(msg, isError = true) {
       const banner = document.getElementById("page-banner");
       const text = document.getElementById("page-banner-text");
-      banner.className = isError
-        ? "mb-6 p-4 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-amber-200 text-sm flex items-center justify-between gap-4"
-        : "mb-6 p-4 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-emerald-200 text-sm flex items-center justify-between gap-4";
+      banner.style.backgroundColor = isError ? "#FFD93D" : "#8EEBC8";
       text.textContent = msg;
       banner.classList.remove("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -579,9 +837,8 @@
       document.getElementById("page-banner").classList.add("hidden");
     }
 
-    // Shorten long AI titles to a clean 2–6 word heading
     function makeShortTitle(rawTitle, fallbackTopic) {
-      const base = (fallbackTopic || rawTitle || "My Memory Room").trim();
+      const base = (fallbackTopic || rawTitle || "My Sticker Room").trim();
       const cleaned = base.replace(/^[:\-–—\s]+/, "").split(/[:.—–-]/)[0].trim();
       const words = cleaned.split(/\s+/);
       if (words.length <= 6) return cleaned;
@@ -631,13 +888,32 @@
       const bar = document.getElementById("grounding-bar");
       const links = (currentPalace.grounded_links || []).filter(l => l && l.uri && /^https?:\/\//i.test(l.uri));
       if (links.length > 0) {
-        bar.innerHTML = `<span class="text-slate-400">Sources: </span>` + links.map(l => {
+        bar.innerHTML = `<span class="font-bold text-[#141414]">Sources: </span>` + links.map(l => {
           const safeTitle = (l.title || l.uri).replace(/[<>&"]/g, "");
-          return `<a href="${l.uri}" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline mr-2">${safeTitle}</a>`;
+          return `<a href="${l.uri}" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-[#141414] mr-2">${safeTitle}</a>`;
         }).join(" • ");
       } else {
         bar.textContent = "AI-generated — double-check";
       }
+    }
+
+    function renderCollectedDots() {
+      const dotsEl = document.getElementById("collected-dots");
+      const labelEl = document.getElementById("collected-label");
+      const total = currentPalace.anchors.length;
+      dotsEl.innerHTML = "";
+      currentPalace.anchors.forEach((a, idx) => {
+        const isCollected = collectedPins.has(idx);
+        const dot = document.createElement("button");
+        dot.onclick = () => selectStation(idx, true);
+        dot.title = `Sticker #${a.id}: ${a.object_name}`;
+        dot.className = "w-5 h-5 rounded-full border-2 border-[#141414] flex items-center justify-center text-[10px] font-display transition";
+        dot.style.backgroundColor = isCollected ? getPinColor(idx) : "#FFFFFF";
+        dot.style.boxShadow = isCollected ? "1.5px 1.5px 0 #141414" : "none";
+        dot.textContent = isCollected ? "✓" : String(a.id);
+        dotsEl.appendChild(dot);
+      });
+      labelEl.textContent = `${collectedPins.size} of ${total} collected`;
     }
 
     function renderPalace() {
@@ -648,6 +924,7 @@
       }
 
       renderGroundingBar();
+      renderCollectedDots();
 
       const pinsLayer = document.getElementById("pins-layer");
       pinsLayer.innerHTML = "";
@@ -657,24 +934,26 @@
         const centerX = (xmin + xmax) / 20;
         const centerY = (ymin + ymax) / 20;
         const isSelected = idx === activeAnchorIndex;
+        const pinColor = getPinColor(idx);
 
-        const boxDiv = document.createElement("div");
-        boxDiv.className = `absolute bbox-overlay rounded-xl pointer-events-none ${
-          isSelected ? "border-2 border-cyan-400 bg-cyan-400/15" : "border border-white/30 bg-slate-950/15"
-        }`;
-        boxDiv.style.top = `${ymin / 10}%`;
-        boxDiv.style.left = `${xmin / 10}%`;
-        boxDiv.style.width = `${(xmax - xmin) / 10}%`;
-        boxDiv.style.height = `${(ymax - ymin) / 10}%`;
-        pinsLayer.appendChild(boxDiv);
+        if (isSelected) {
+          const boxDiv = document.createElement("div");
+          boxDiv.className = "absolute bbox-overlay rounded-2xl pointer-events-none border-[3px] border-[#141414]";
+          boxDiv.style.backgroundColor = `${pinColor}33`;
+          boxDiv.style.boxShadow = "4px 4px 0 #141414";
+          boxDiv.style.top = `${ymin / 10}%`;
+          boxDiv.style.left = `${xmin / 10}%`;
+          boxDiv.style.width = `${(xmax - xmin) / 10}%`;
+          boxDiv.style.height = `${(ymax - ymin) / 10}%`;
+          pinsLayer.appendChild(boxDiv);
+        }
 
         const pinBtn = document.createElement("button");
         pinBtn.style.top = `${centerY}%`;
         pinBtn.style.left = `${centerX}%`;
-        pinBtn.className = `absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full font-extrabold text-xs flex items-center justify-center transition transform hover:scale-110 shadow-lg ${
-          isSelected
-            ? "bg-cyan-400 text-slate-950 pin-pulse ring-4 ring-cyan-300/50 z-20"
-            : "bg-slate-900/95 text-cyan-300 border-2 border-cyan-400/80 hover:bg-cyan-400 hover:text-slate-950 z-10"
+        pinBtn.style.backgroundColor = pinColor;
+        pinBtn.className = `absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-base flex items-center justify-center pin-sticker ${
+          isSelected ? "pin-sticker-active" : "z-10"
         }`;
         pinBtn.textContent = anchor.id;
         pinBtn.onclick = () => selectStation(idx, true);
@@ -683,32 +962,42 @@
 
       const active = currentPalace.anchors[activeAnchorIndex];
       if (active) {
-        document.getElementById("active-station-pill").textContent = `Pin #${active.id} of ${currentPalace.anchors.length}`;
+        const pill = document.getElementById("active-station-pill");
+        pill.textContent = `Sticker #${active.id} of ${currentPalace.anchors.length}`;
+        pill.style.backgroundColor = getPinColor(activeAnchorIndex);
         document.getElementById("active-object").textContent = active.object_name;
         document.getElementById("active-term").textContent = active.concept_term;
         document.getElementById("active-def").textContent = active.concept_definition;
-        document.getElementById("active-mnemonic").textContent = `"${active.sensory_mnemonic}"`;
+        document.getElementById("active-mnemonic").textContent = `“${active.sensory_mnemonic}”`;
       }
 
       const listEl = document.getElementById("station-list");
       listEl.innerHTML = "";
       currentPalace.anchors.forEach((a, idx) => {
+        const isSelected = idx === activeAnchorIndex;
+        const color = getPinColor(idx);
         const row = document.createElement("button");
         row.onclick = () => selectStation(idx, true);
-        row.className = `w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between ${
-          idx === activeAnchorIndex
-            ? "bg-cyan-500/15 border-cyan-400/50 text-white"
-            : "bg-slate-950/60 border-slate-800/80 text-slate-300 hover:border-slate-700"
+        row.className = `w-full text-left p-2.5 rounded-xl border-[2.5px] border-[#141414] transition flex items-center justify-between ${
+          isSelected
+            ? "shadow-[4px_4px_0_#141414] -translate-y-0.5"
+            : "bg-white hover:bg-[#FAF7FF] shadow-[2px_2px_0_#141414]"
         }`;
+        if (isSelected) {
+          row.style.backgroundColor = color;
+        }
         row.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <span class="w-6 h-6 rounded-full bg-slate-800 text-cyan-300 text-xs font-bold flex items-center justify-center shrink-0">${a.id}</span>
+            <span class="w-7 h-7 rounded-full border-2 border-[#141414] text-[#141414] text-xs font-display flex items-center justify-center shrink-0" style="background-color: ${isSelected ? '#FFFFFF' : color}">${a.id}</span>
             <div class="truncate">
-              <div class="text-xs font-bold truncate">${a.concept_term}</div>
-              <div class="text-[11px] text-slate-400 truncate">Pinned to: ${a.object_name}</div>
+              <div class="text-xs font-bold text-[#141414] truncate">${a.concept_term}</div>
+              <div class="text-[11px] font-medium text-neutral-700 truncate">On: ${a.object_name}</div>
             </div>
           </div>
-          <span class="text-[11px] text-cyan-400 shrink-0 ml-2">🔊 Listen</span>
+          <span class="text-[11px] font-bold text-[#141414] shrink-0 ml-2 inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+            <span>Listen</span>
+          </span>
         `;
         listEl.appendChild(row);
       });
@@ -718,6 +1007,7 @@
 
     function selectStation(idx, playAudio = false) {
       activeAnchorIndex = idx;
+      collectedPins.add(idx);
       renderPalace();
       if (playAudio) {
         const a = currentPalace.anchors[idx];
@@ -751,14 +1041,15 @@
       hideBanner();
       currentPalace = PRESETS[key];
       activeAnchorIndex = 0;
+      collectedPins = new Set([0]);
       sprintIndex = 0;
       renderPalace();
       ["spanish", "planets", "shopping"].forEach(k => {
         const btn = document.getElementById(`preset-${k}`);
         if (!btn) return;
         btn.className = k === key
-          ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 transition"
-          : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition";
+          ? "btn-primary px-3 py-1.5 text-xs"
+          : "btn-secondary px-3 py-1.5 text-xs";
       });
     }
 
@@ -780,15 +1071,16 @@
     }
 
     function setProgressStep(stepNum) {
+      const colors = ["#FFD93D", "#8EEBC8", "#FFA8CB"];
       [1, 2, 3].forEach(n => {
         const el = document.getElementById(`step-progress-${n}`);
         if (!el) return;
-        if (n < stepNum) {
-          el.className = "flex items-center gap-3 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xs font-semibold text-emerald-200";
-        } else if (n === stepNum) {
-          el.className = "flex items-center gap-3 p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-xs font-semibold text-cyan-200";
+        if (n <= stepNum) {
+          el.className = "flex items-center gap-3 p-3 rounded-xl border-[2.5px] border-[#141414] shadow-[3px_3px_0_#141414] text-xs font-bold text-[#141414]";
+          el.style.backgroundColor = colors[n - 1];
         } else {
-          el.className = "flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400";
+          el.className = "flex items-center gap-3 p-3 rounded-xl bg-white border-[2.5px] border-[#141414] text-xs font-medium text-neutral-500";
+          el.style.backgroundColor = "#FFFFFF";
         }
       });
     }
@@ -860,6 +1152,7 @@
           anchors: data.anchors
         };
         activeAnchorIndex = 0;
+        collectedPins = new Set([0]);
         sprintIndex = 0;
         loadingScreen.classList.add("hidden");
         renderPalace();
@@ -876,23 +1169,25 @@
       }
     }
 
-    // Render the Quiz screen, including the Room Photo with the current pin highlighted
+    // Render the Quiz screen, including the Room Photo with the current colored sticker pin bigger & tilted
     function renderSprintCard() {
       const anchors = currentPalace.anchors;
       const idx = sprintIndex % anchors.length;
       const a = anchors[idx];
+      const color = getPinColor(idx);
 
       document.getElementById("quiz-room-title").textContent = currentPalace.title;
-      document.getElementById("quiz-pin-counter").textContent = `Pin ${idx + 1} of ${anchors.length}`;
+      document.getElementById("quiz-pin-counter").textContent = `Sticker ${idx + 1} of ${anchors.length}`;
       document.getElementById("quiz-room-img").src = currentPalace.photoUrl || "/rooms/spanish_desk.jpg";
       document.getElementById("quiz-object-inline").textContent = a.object_name;
 
+      const objPill = document.getElementById("quiz-object-pill");
+      if (objPill) objPill.style.backgroundColor = color;
       document.getElementById("sprint-object").textContent = `#${a.id} ${a.object_name}`;
       document.getElementById("sprint-question").textContent = a.socratic_question;
       document.getElementById("sprint-input").value = "";
       document.getElementById("sprint-feedback-box").classList.add("hidden");
 
-      // Draw pins on the quiz room photo with the current quiz pin highlighted
       const quizPins = document.getElementById("quiz-pins-layer");
       quizPins.innerHTML = "";
       anchors.forEach((anchor, i) => {
@@ -900,10 +1195,13 @@
         const centerX = (xmin + xmax) / 20;
         const centerY = (ymin + ymax) / 20;
         const isCurrent = i === idx;
+        const pColor = getPinColor(i);
 
         if (isCurrent) {
           const boxDiv = document.createElement("div");
-          boxDiv.className = "absolute bbox-overlay rounded-xl pointer-events-none border-2 border-cyan-400 bg-cyan-400/20";
+          boxDiv.className = "absolute bbox-overlay rounded-2xl pointer-events-none border-[3px] border-[#141414]";
+          boxDiv.style.backgroundColor = `${pColor}33`;
+          boxDiv.style.boxShadow = "4px 4px 0 #141414";
           boxDiv.style.top = `${ymin / 10}%`;
           boxDiv.style.left = `${xmin / 10}%`;
           boxDiv.style.width = `${(xmax - xmin) / 10}%`;
@@ -914,10 +1212,11 @@
         const pin = document.createElement("button");
         pin.style.top = `${centerY}%`;
         pin.style.left = `${centerX}%`;
-        pin.className = `absolute -translate-x-1/2 -translate-y-1/2 rounded-full font-extrabold text-xs flex items-center justify-center transition ${
+        pin.style.backgroundColor = pColor;
+        pin.className = `absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pin-sticker ${
           isCurrent
-            ? "w-10 h-10 bg-cyan-400 text-slate-950 pin-pulse ring-4 ring-cyan-300/60 z-20"
-            : "w-7 h-7 bg-slate-900/80 text-slate-400 border border-slate-600 z-10 opacity-65 hover:opacity-100"
+            ? "w-10 h-10 text-base pin-sticker-active"
+            : "w-7 h-7 text-xs z-10 opacity-75"
         }`;
         pin.textContent = anchor.id;
         pin.onclick = () => {
@@ -936,8 +1235,8 @@
     function showSprintHint() {
       const a = currentPalace.anchors[sprintIndex % currentPalace.anchors.length];
       const box = document.getElementById("sprint-feedback-box");
-      box.className = "mt-4 p-4 rounded-xl border border-cyan-500/40 bg-cyan-950/30 text-xs text-cyan-200";
-      box.textContent = `💡 Story Hint: "${a.sensory_mnemonic}"`;
+      box.className = "mt-4 p-4 sticker-block bg-[#C4B2FF] text-xs font-semibold text-[#141414]";
+      box.textContent = `Story Hint: “${a.sensory_mnemonic}”`;
       box.classList.remove("hidden");
     }
 
@@ -957,7 +1256,6 @@
       showBanner("Quiz score reset.", false);
     }
 
-    // Offline fallback grader used whenever Gemini takes >20s or errors
     function offlineGradeRecall(req) {
       const userLow = (req.user_answer || "").toLowerCase();
       const termWords = req.concept_term.toLowerCase().split(/[\s—\-()/]+/).filter(w => w.length >= 3);
@@ -970,7 +1268,7 @@
         score: passed ? 92 : 35,
         is_correct: passed,
         feedback: passed
-          ? `Spot on! You remembered what was pinned to the ${req.object_name}.`
+          ? `Spot on! You remembered what was stuck to the ${req.object_name}.`
           : `Not quite—picture the story on the ${req.object_name} to recall ${req.concept_term}.`
       };
     }
@@ -1019,12 +1317,10 @@
         updateScoreDisplays();
 
         const box = document.getElementById("sprint-feedback-box");
-        box.className = `mt-4 p-4 rounded-xl border text-xs ${
-          data.is_correct
-            ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-200"
-            : "border-amber-500/50 bg-amber-950/40 text-amber-200"
+        box.className = `mt-4 p-4 sticker-block text-xs font-medium text-[#141414] ${
+          data.is_correct ? "bg-[#8EEBC8]" : "bg-[#FFA8CB]"
         }`;
-        box.innerHTML = `<strong>Score: ${data.score}/100</strong> — ${data.feedback}<br/><span class="text-slate-300 mt-1 block">Answer: <strong>${a.concept_term}</strong> (${a.concept_definition})</span>`;
+        box.innerHTML = `<strong class="font-display text-sm">Score: ${data.score}/100</strong> — ${data.feedback}<br/><span class="mt-1 block">Answer: <strong>${a.concept_term}</strong> (${a.concept_definition})</span>`;
         box.classList.remove("hidden");
       } finally {
         btn.disabled = false;
@@ -1043,7 +1339,6 @@
       renderSprintCard();
     }
 
-    // Real 60-Second Timed Challenge using the current room's pins
     function toggleTimedChallenge() {
       if (timedModeActive) {
         stopTimedChallenge();
@@ -1059,7 +1354,7 @@
 
       document.getElementById("timer-pill").classList.remove("hidden");
       document.getElementById("timer-seconds").textContent = "60";
-      document.getElementById("timed-mode-btn").textContent = "⏹ Stop 60s Timer";
+      document.getElementById("timed-mode-btn").innerHTML = `<span>Stop 60s Timer</span>`;
 
       timerInterval = setInterval(() => {
         timeRemaining--;
@@ -1067,7 +1362,7 @@
         if (timeRemaining <= 0) {
           stopTimedChallenge();
           const pct = sprintTotal > 0 ? Math.round((sprintCorrect / sprintTotal) * 100) : 0;
-          showBanner(`⏰ Time’s up! You answered ${sprintCorrect} of ${sprintTotal} correctly (${pct}%) in 60 seconds.`, false);
+          showBanner(`Time’s up! You answered ${sprintCorrect} of ${sprintTotal} correctly (${pct}%) in 60 seconds.`, false);
         }
       }, 1000);
     }
@@ -1079,7 +1374,10 @@
         timerInterval = null;
       }
       document.getElementById("timer-pill").classList.add("hidden");
-      document.getElementById("timed-mode-btn").textContent = "⚡ Start 60s Timed Challenge";
+      document.getElementById("timed-mode-btn").innerHTML = `
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>Start 60s Timed Challenge</span>
+      `;
     }
 
     function switchScreen(screen) {
@@ -1089,9 +1387,9 @@
         document.getElementById(`screen-${s}`).classList.toggle("hidden", s !== screen);
         const navBtn = document.getElementById(`nav-${s}`);
         if (s === screen) {
-          navBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 transition";
+          navBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#FFD93D] text-[#141414] border-2 border-[#141414] shadow-[2px_2px_0_#141414] transition inline-flex items-center gap-1.5";
         } else {
-          navBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+          navBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#141414] hover:bg-white border-2 border-transparent transition inline-flex items-center gap-1.5";
         }
       });
       if (screen === "quiz") {

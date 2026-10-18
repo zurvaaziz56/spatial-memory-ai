@@ -682,18 +682,27 @@
       btn.textContent = "Scanning Room (Gemini 3.8)...";
 
       try {
-        const formData = new FormData();
-        formData.append("image", fileInput.files[0]);
-        formData.append("topic", topic);
-        formData.append("study_notes", notesInput.value);
-        formData.append("use_search_grounding", "true");
+        let data;
+        if (window.LOCI_BACKEND) {
+          data = await window.LOCI_BACKEND.generatePalace({
+            file: fileInput.files[0],
+            topic,
+            studyNotes: notesInput.value
+          });
+        } else {
+          const formData = new FormData();
+          formData.append("image", fileInput.files[0]);
+          formData.append("topic", topic);
+          formData.append("study_notes", notesInput.value);
+          formData.append("use_search_grounding", "true");
 
-        const res = await fetch("/api/generate-palace", {
-          method: "POST",
-          body: formData
-        });
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
+          const res = await fetch("/api/generate-palace", {
+            method: "POST",
+            body: formData
+          });
+          if (!res.ok) throw new Error(await res.text());
+          data = await res.json();
+        }
 
         currentPalace = {
           title: data.topic_summary || topic,
@@ -705,7 +714,7 @@
         renderPalace();
         selectStation(0, true);
       } catch (err) {
-        alert("Live Gemini scan error (verify GEMINI_API_KEY is set): " + err.message);
+        alert("Live Gemini scan error: " + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "Build Palace";
@@ -741,17 +750,23 @@
       const btn = document.getElementById("sprint-submit-btn");
       btn.textContent = "Grading...";
       try {
-        const res = await fetch("/api/evaluate-recall", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            object_name: a.object_name,
-            concept_term: a.concept_term,
-            concept_definition: a.concept_definition,
-            user_answer: ans
-          })
-        });
-        const data = await res.json();
+        const payload = {
+          object_name: a.object_name,
+          concept_term: a.concept_term,
+          concept_definition: a.concept_definition,
+          user_answer: ans
+        };
+        let data;
+        if (window.LOCI_BACKEND) {
+          data = await window.LOCI_BACKEND.evaluateRecall(payload);
+        } else {
+          const res = await fetch("/api/evaluate-recall", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          data = await res.json();
+        }
         sprintTotal++;
         if (data.is_correct) sprintCorrect++;
         document.getElementById("sprint-score-badge").textContent =
@@ -840,5 +855,163 @@
       renderPalace();
     });
   </script>
+
+  <!--
+    Serverless Gemini backend via Firebase AI Logic (Gemini Developer API, works on the no-cost Spark plan).
+    Mirrors the prompts/schemas in main.py. When FIREBASE_CONFIG is null, the app falls back to the
+    FastAPI endpoints (/api/generate-palace, /api/evaluate-recall) so the Cloud Run deployment still works.
+    Note: the Firebase web config is a public identifier, not a secret.
+  -->
+  <script type="module">
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAAR5cxLAwaEuJkcoE9P05KAweJeS1XIoQ",
+      authDomain: "spatial-memory-ai-loci-849b3.firebaseapp.com",
+      projectId: "spatial-memory-ai-loci-849b3",
+      storageBucket: "spatial-memory-ai-loci-849b3.firebasestorage.app",
+      messagingSenderId: "464718752366",
+      appId: "1:464718752366:web:6edd3ae2361de8794b547f",
+      measurementId: "G-XXDVW9VQWS"
+    };
+    const GEMINI_MODEL = "gemini-3.8-flash";
+    const FIREBASE_SDK = "https://www.gstatic.com/firebasejs/13.0.0";
+
+    if (FIREBASE_CONFIG) {
+      const { initializeApp } = await import(`${FIREBASE_SDK}/firebase-app.js`);
+      const { getAI, getGenerativeModel, GoogleAIBackend, Schema } = await import(`${FIREBASE_SDK}/firebase-ai.js`);
+
+      const ai = getAI(initializeApp(FIREBASE_CONFIG), { backend: new GoogleAIBackend() });
+
+      const anchorSchema = Schema.object({
+        properties: {
+          id: Schema.integer({ description: "Sequential station number starting at 1" }),
+          object_name: Schema.string({ description: "Name of the physical object detected in the room photo" }),
+          box_2d: Schema.array({ items: Schema.integer(), description: "2D bounding box [ymin, xmin, ymax, xmax] normalized 0 to 1000" }),
+          concept_term: Schema.string({ description: "The target term, concept, or formula to memorize" }),
+          concept_definition: Schema.string({ description: "Concise, accurate explanation or translation of the concept" }),
+          sensory_mnemonic: Schema.string({ description: "Vivid, bizarre, multisensory action scene physically linking the object_name to the concept_term" }),
+          acoustic_cue_hz: Schema.integer({ description: "Distinct musical frequency in Hz between 220 and 660 for Targeted Memory Reactivation" }),
+          socratic_question: Schema.string({ description: "Active recall question that prompts the user to retrieve the concept using the spatial anchor" })
+        }
+      });
+
+      const palaceModel = getGenerativeModel(ai, {
+        model: GEMINI_MODEL,
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: Schema.object({
+            properties: {
+              topic_summary: Schema.string(),
+              cognitive_principle: Schema.string(),
+              grounded_sources: Schema.array({ items: Schema.string() }),
+              anchors: Schema.array({ items: anchorSchema })
+            }
+          }),
+          temperature: 0.4
+        }
+      });
+
+      const recallModel = getGenerativeModel(ai, {
+        model: GEMINI_MODEL,
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: Schema.object({
+            properties: {
+              score: Schema.integer({ description: "Score from 0 to 100 based on semantic accuracy" }),
+              is_correct: Schema.boolean({ description: "True if score is 70 or above" }),
+              feedback: Schema.string({ description: "1-sentence Socratic feedback reinforcing the spatial anchor" })
+            }
+          }),
+          temperature: 0.2
+        }
+      });
+
+      const groundedModel = getGenerativeModel(ai, { model: GEMINI_MODEL, tools: [{ googleSearch: {} }] });
+
+      const fileToBase64 = (file) => new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(",")[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+
+      async function generatePalace({ file, topic, studyNotes = "" }) {
+        let groundedContext = "";
+        const groundedUrls = [];
+        if (studyNotes.trim().length < 40) {
+          try {
+            const g = await groundedModel.generateContent(
+              `Extract 5 high-yield, technically accurate key terms and definitions for studying: ${topic}. Be concise.`
+            );
+            groundedContext = g.response.text() || "";
+            const chunks = g.response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+            for (const c of chunks.slice(0, 3)) {
+              if (c.web?.uri) groundedUrls.push(c.web.title || c.web.uri);
+            }
+          } catch (_) {
+            groundedContext = "";
+          }
+        }
+
+        const prompt = `
+You are a computational cognitive neuroscientist specializing in the Method of Loci (Spatial Memory Palaces) and Targeted Memory Reactivation (TMR).
+
+Analyze this room image and identify exactly 5 distinct, well-spaced physical objects across the scene from left to right.
+For each physical object:
+1. Return its exact 2D bounding box \`box_2d\` in \`[ymin, xmin, ymax, xmax]\` format normalized from 0 to 1000.
+2. Map one core concept from the study material below onto that physical object.
+3. Create an unforgettable, bizarre, multisensory visual association (\`sensory_mnemonic\`) where the concept physically interacts with that specific object in the room.
+4. Assign a distinct acoustic cue frequency (\`acoustic_cue_hz\`) between 220 and 660 Hz.
+5. Write a Socratic recall question.
+
+TARGET TOPIC: ${topic}
+USER STUDY MATERIAL: ${studyNotes}
+GROUNDED KNOWLEDGE CONTEXT: ${groundedContext}
+`;
+        const result = await palaceModel.generateContent([
+          { inlineData: { data: await fileToBase64(file), mimeType: file.type || "image/jpeg" } },
+          prompt
+        ]);
+        const data = JSON.parse(result.response.text());
+        if (groundedUrls.length) {
+          data.grounded_sources = groundedUrls;
+        } else if (!data.grounded_sources || !data.grounded_sources.length) {
+          data.grounded_sources = ["Gemini 3.8 Flash Multimodal Spatial Engine"];
+        }
+        return data;
+      }
+
+      async function evaluateRecall(req) {
+        try {
+          const prompt = `
+Evaluate the learner's active recall response during a Method of Loci Socratic sprint.
+Physical Room Anchor: ${req.object_name}
+Target Concept: ${req.concept_term}
+Target Definition: ${req.concept_definition}
+Learner's Response: ${req.user_answer}
+
+Grade semantically (paraphrased accurate understanding should score 85-100). If partially correct or wrong, give a brief 1-sentence Socratic cue referencing the physical anchor (${req.object_name}).
+`;
+          const result = await recallModel.generateContent(prompt);
+          return JSON.parse(result.response.text());
+        } catch (_) {
+          // Same offline heuristic as main.py so the sprint never dead-ends.
+          const userLow = req.user_answer.toLowerCase();
+          const termLow = req.concept_term.toLowerCase();
+          const passed = userLow.length > 3 && (userLow.includes(termLow.slice(0, 4)) ||
+            req.concept_definition.toLowerCase().split(/\s+/).slice(0, 5).some((w) => userLow.includes(w)));
+          return {
+            score: passed ? 92 : 35,
+            is_correct: passed,
+            feedback: passed
+              ? `Strong spatial retrieval at the ${req.object_name}!`
+              : `Visualize the bizarre action happening right on the ${req.object_name} to trigger ${req.concept_term}.`
+          };
+        }
+      }
+
+      window.LOCI_BACKEND = { generatePalace, evaluateRecall };
+    }
+  </script>
 </body>
 </html>
+

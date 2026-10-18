@@ -26,7 +26,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 id="brand-name" class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-indigo-300 bg-clip-text text-transparent">LociOS</h1>
-            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Gemini 2.5 Spatial + TMR</span>
+            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Gemini 3.8 Spatial + TMR</span>
           </div>
           <p id="brand-tagline" class="text-xs text-slate-400">Snap Any Room -> Instant Spatial Memory Palace & Acoustic Encoding</p>
         </div>
@@ -73,7 +73,7 @@
         </div>
 
         <button onclick="toggleUploadDrawer()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 hover:opacity-95 transition flex items-center gap-1.5 shadow-md">
-          <span>+ Snap / Upload Your Own Room Photo (Live Gemini 2.5)</span>
+          <span>+ Snap / Upload Your Own Room Photo (Live Gemini 3.8)</span>
         </button>
       </div>
 
@@ -121,7 +121,7 @@
         </div>
 
         <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
-          <span id="grounding-bar">Grounded via Gemini 2.5 Flash Spatial Vision (`box_2d` [ymin, xmin, ymax, xmax])</span>
+          <span id="grounding-bar">Grounded via Gemini 3.8 Flash Spatial Vision (`box_2d` [ymin, xmin, ymax, xmax])</span>
           <span class="text-cyan-400 font-medium">Tip: Click any numbered spatial pin to hear its 3D stereo TMR chord + voice encoding</span>
         </div>
       </div>
@@ -275,7 +275,7 @@
       med: {
         title: "USMLE Neuropharmacology & Autonomic Receptors",
         sceneTheme: "desk",
-        grounded_sources: ["Goodman & Gilman Pharmacological Basis", "Gemini 2.5 Spatial Engine"],
+        grounded_sources: ["Goodman & Gilman Pharmacological Basis", "Gemini 3.8 Spatial Engine"],
         anchors: [
           {
             id: 1,
@@ -379,7 +379,7 @@
       lang: {
         title: "Mandarin Cross-Border M&A & Contract Law",
         sceneTheme: "studio",
-        grounded_sources: ["PRC Civil Code Bilingual Glossary", "Gemini 2.5 Grounded Lexicon"],
+        grounded_sources: ["PRC Civil Code Bilingual Glossary", "Gemini 3.8 Grounded Lexicon"],
         anchors: [
           {
             id: 1,
@@ -531,7 +531,7 @@
     function renderPalace() {
       document.getElementById("palace-title").textContent = currentPalace.title;
       document.getElementById("grounding-bar").textContent =
-        "Grounded via: " + (currentPalace.grounded_sources || ["Gemini 2.5 Flash Spatial Engine"]).join(" • ");
+        "Grounded via: " + (currentPalace.grounded_sources || ["Gemini 3.8 Flash Spatial Engine"]).join(" • ");
 
       const canvasEl = document.getElementById("room-backdrop-canvas");
       const imgEl = document.getElementById("uploaded-room-img");
@@ -679,7 +679,7 @@
       reader.readAsDataURL(fileInput.files[0]);
 
       btn.disabled = true;
-      btn.textContent = "Scanning Room (Gemini 2.5)...";
+      btn.textContent = "Scanning Room (Gemini 3.8)...";
 
       try {
         const formData = new FormData();
@@ -697,7 +697,7 @@
 
         currentPalace = {
           title: data.topic_summary || topic,
-          grounded_sources: data.grounded_sources || ["Gemini 2.5 Spatial Vision + Google Search Grounding"],
+          grounded_sources: data.grounded_sources || ["Gemini 3.8 Spatial Vision + Google Search Grounding"],
           anchors: data.anchors
         };
         activeAnchorIndex = 0;

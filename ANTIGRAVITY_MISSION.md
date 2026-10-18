@@ -5,7 +5,7 @@ Paste the prompt below directly into **Google Antigravity (Mission Control / Age
 ---
 
 ```text
-Mission: Test, verify, and deploy this `spatial-memory-ai` FastAPI + Gemini 2.5 Flash application to Google Cloud Run and push to a public GitHub repository for the Google Cloud AI Builder Cup.
+Mission: Test, verify, and deploy this `spatial-memory-ai` FastAPI + Gemini 3.8 Flash application to Google Cloud Run and push to a public GitHub repository for the Google Cloud AI Builder Cup.
 
 Execute the following steps autonomously:
 1. Inspect the workspace files (`main.py`, `static/index.html`, `requirements.txt`, `Dockerfile`, `deploy.sh`).

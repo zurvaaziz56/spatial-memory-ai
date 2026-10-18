@@ -61,7 +61,7 @@ async def generate_palace(
         if use_search_grounding.lower() == "true" and len(study_notes.strip()) < 40:
             try:
                 search_resp = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3.8-flash",
                     contents=f"Extract 5 high-yield, technically accurate key terms and definitions for studying: {topic}. Be concise.",
                     config=types.GenerateContentConfig(
                         tools=[types.Tool(google_search=types.GoogleSearch())]
@@ -93,7 +93,7 @@ GROUNDED KNOWLEDGE CONTEXT: {grounded_context}
 """
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.8-flash",
             contents=[
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
                 prompt
@@ -109,7 +109,7 @@ GROUNDED KNOWLEDGE CONTEXT: {grounded_context}
         if grounded_urls:
             result_data["grounded_sources"] = grounded_urls
         elif not result_data.get("grounded_sources"):
-            result_data["grounded_sources"] = ["Gemini 2.5 Flash Multimodal Spatial Engine"]
+            result_data["grounded_sources"] = ["Gemini 3.8 Flash Multimodal Spatial Engine"]
 
         return JSONResponse(content=result_data)
 
@@ -131,7 +131,7 @@ Learner's Response: {req.user_answer}
 Grade semantically (paraphrased accurate understanding should score 85-100). If partially correct or wrong, give a brief 1-sentence Socratic cue referencing the physical anchor ({req.object_name}).
 """
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.8-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",

@@ -1419,7 +1419,13 @@
       measurementId: "G-XXDVW9VQWS"
     };
     const RECAPTCHA_ENTERPRISE_SITE_KEY = "6LfRD_UtAAAAAGN-UeL8u2NmM1YkRyjgcK7Hc5By";
-    const GEMINI_MODEL = "gemini-3.8-flash";
+    const GEMINI_MODELS = [
+      "gemini-3.5-flash-lite",
+      "gemini-3.7-flash",
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
+      "gemini-3.8-flash"
+    ];
     const FIREBASE_SDK = "https://www.gstatic.com/firebasejs/13.0.0";
     const GEMINI_TIMEOUT_MS = 20000;
 
@@ -1431,6 +1437,50 @@
           (err) => { clearTimeout(timer); reject(err); }
         );
       });
+    }
+
+    // Compress and resize uploaded room photos to max 768px JPEG for fast <7s multimodal inference
+    async function compressImageToBase64(file, maxDim = 768, quality = 0.78) {
+      try {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result));
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+        const img = await new Promise((resolve, reject) => {
+          const el = new Image();
+          el.onload = () => resolve(el);
+          el.onerror = reject;
+          el.src = dataUrl;
+        });
+        let width = img.naturalWidth || img.width || 768;
+        let height = img.naturalHeight || img.height || 512;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const jpegUrl = canvas.toDataURL("image/jpeg", quality);
+        return { base64: jpegUrl.split(",")[1], mimeType: "image/jpeg" };
+      } catch (_) {
+        const raw = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result).split(",")[1]);
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+        return { base64: raw, mimeType: file.type || "image/jpeg" };
+      }
     }
 
     if (FIREBASE_CONFIG) {
@@ -1462,98 +1512,120 @@
         }
       });
 
-      const palaceModel = getGenerativeModel(ai, {
-        model: GEMINI_MODEL,
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: Schema.object({
-            properties: {
-              topic_summary: Schema.string({ description: "Short 2 to 5 word title for this topic" }),
-              cognitive_principle: Schema.string(),
-              grounded_sources: Schema.array({ items: Schema.string() }),
-              anchors: Schema.array({ items: anchorSchema })
-            }
-          }),
-          temperature: 0.4
-        }
-      });
+      const palaceGenerationConfig = {
+        responseMimeType: "application/json",
+        responseSchema: Schema.object({
+          properties: {
+            topic_summary: Schema.string({ description: "Short 2 to 5 word title for this topic" }),
+            cognitive_principle: Schema.string(),
+            grounded_sources: Schema.array({ items: Schema.string() }),
+            anchors: Schema.array({ items: anchorSchema })
+          }
+        }),
+        temperature: 0.35
+      };
 
-      const recallModel = getGenerativeModel(ai, {
-        model: GEMINI_MODEL,
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: Schema.object({
-            properties: {
-              score: Schema.integer({ description: "Score from 0 to 100 based on meaning" }),
-              is_correct: Schema.boolean({ description: "True if score is 70 or above" }),
-              feedback: Schema.string({ description: "Friendly 1-sentence feedback referencing the room object" })
-            }
-          }),
-          temperature: 0.2
-        }
-      });
+      const recallGenerationConfig = {
+        responseMimeType: "application/json",
+        responseSchema: Schema.object({
+          properties: {
+            score: Schema.integer({ description: "Score from 0 to 100 based on meaning" }),
+            is_correct: Schema.boolean({ description: "True if score is 70 or above" }),
+            feedback: Schema.string({ description: "Friendly 1-sentence feedback referencing the room object" })
+          }
+        }),
+        temperature: 0.2
+      };
 
-      const groundedModel = getGenerativeModel(ai, { model: GEMINI_MODEL, tools: [{ googleSearch: {} }] });
-
-      const fileToBase64 = (file) => new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result).split(",")[1]);
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
+      function buildFallbackPalace(topic, studyNotes = "") {
+        const cleanTopic = (topic || "My Study List").trim();
+        const customItems = (studyNotes || "")
+          .split(/[,;\n]+/)
+          .map(s => s.trim())
+          .filter(Boolean);
+        const defaultObjects = [
+          { name: "Left Corner Anchor", box: [420, 80, 680, 230], hz: 262 },
+          { name: "Center-Left Surface", box: [480, 260, 740, 420], hz: 330 },
+          { name: "Middle Focal Object", box: [380, 440, 650, 580], hz: 392 },
+          { name: "Right-Center Fixture", box: [440, 610, 710, 770], hz: 494 },
+          { name: "Far-Right Landmark", box: [260, 790, 720, 940], hz: 587 }
+        ];
+        const anchors = defaultObjects.map((obj, idx) => {
+          const itemTerm = customItems[idx] || `${cleanTopic} — Key Idea #${idx + 1}`;
+          return {
+            id: idx + 1,
+            object_name: obj.name,
+            box_2d: obj.box,
+            concept_term: itemTerm,
+            concept_definition: `Core concept #${idx + 1} for ${cleanTopic}, anchored to the ${obj.name.toLowerCase()}.`,
+            sensory_mnemonic: `Picture a giant glowing sticker of "${itemTerm}" bouncing loudly on top of the ${obj.name}.`,
+            acoustic_cue_hz: obj.hz,
+            socratic_question: `Look at the ${obj.name}: what key idea from ${cleanTopic} is stuck right there?`
+          };
+        });
+        return {
+          topic_summary: cleanTopic,
+          cognitive_principle: "Method of Loci",
+          grounded_sources: [],
+          grounded_links: [],
+          anchors
+        };
+      }
 
       async function generatePalace({ file, topic, studyNotes = "" }) {
-        let groundedContext = "";
-        const groundedLinks = [];
-        if (studyNotes.trim().length < 40) {
-          try {
-            const g = await withTimeout(
-              groundedModel.generateContent(
-                `Extract 5 practical, beginner-friendly key items and short explanations for: ${topic}. Be concise.`
-              ),
-              GEMINI_TIMEOUT_MS
-            );
-            groundedContext = g.response.text() || "";
-            const chunks = g.response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-            for (const c of chunks.slice(0, 3)) {
-              if (c.web?.uri) {
-                groundedLinks.push({ title: c.web.title || c.web.uri, uri: c.web.uri });
-              }
-            }
-          } catch (_) {
-            groundedContext = "";
-          }
-        }
+        const startTime = Date.now();
+        const { base64, mimeType } = await compressImageToBase64(file);
 
         const prompt = `
 Analyze this room image and identify 5 distinct, well-spaced physical objects from left to right.
-For each object:
+For each of the 5 objects:
 1. Return its 2D bounding box \`box_2d\` in \`[ymin, xmin, ymax, xmax]\` normalized 0 to 1000.
 2. Attach one key item or concept from the topic below onto that object.
-3. Write a fun, memorable visual story (\`sensory_mnemonic\`) where the concept interacts with that specific object.
+3. Write a concise, playful 1-sentence visual story (\`sensory_mnemonic\`) where the concept interacts with that specific object.
 4. Assign an \`acoustic_cue_hz\` between 220 and 660.
-5. Write a clear quiz question (\`socratic_question\`).
+5. Write a clear 1-sentence quiz question (\`socratic_question\`).
 Keep \`topic_summary\` to a short 2 to 5 word title.
 
 TARGET TOPIC: ${topic}
 USER NOTES: ${studyNotes}
-GROUNDED CONTEXT: ${groundedContext}
 `;
-        const result = await withTimeout(
-          palaceModel.generateContent([
-            { inlineData: { data: await fileToBase64(file), mimeType: file.type || "image/jpeg" } },
-            prompt
-          ]),
-          GEMINI_TIMEOUT_MS
-        );
-        const data = JSON.parse(result.response.text());
-        data.grounded_links = groundedLinks;
-        return data;
+
+        for (const modelName of GEMINI_MODELS) {
+          const elapsed = Date.now() - startTime;
+          const remainingMs = GEMINI_TIMEOUT_MS - elapsed;
+          if (remainingMs < 2500) break;
+
+          try {
+            const model = getGenerativeModel(ai, {
+              model: modelName,
+              generationConfig: palaceGenerationConfig
+            });
+            const result = await withTimeout(
+              model.generateContent([
+                { inlineData: { data: base64, mimeType } },
+                prompt
+              ]),
+              Math.min(remainingMs, 14000)
+            );
+            const data = JSON.parse(result.response.text());
+            if (data && Array.isArray(data.anchors) && data.anchors.length > 0) {
+              const chunks = result.response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+              const links = [];
+              for (const c of chunks.slice(0, 3)) {
+                if (c.web?.uri) {
+                  links.push({ title: c.web.title || c.web.uri, uri: c.web.uri });
+                }
+              }
+              data.grounded_links = links;
+              return data;
+            }
+          } catch (_) {}
+        }
+        return buildFallbackPalace(topic, studyNotes);
       }
 
       async function evaluateRecall(req) {
-        try {
-          const prompt = `
+        const prompt = `
 Grade the user's quiz answer based on meaning (paraphrased answers that get the main idea right should score 85-100).
 Room Object: ${req.object_name}
 Target Concept: ${req.concept_term}
@@ -1562,11 +1634,17 @@ User's Answer: ${req.user_answer}
 
 Give a brief, encouraging 1-sentence feedback mentioning the ${req.object_name}.
 `;
-          const result = await withTimeout(recallModel.generateContent(prompt), GEMINI_TIMEOUT_MS);
-          return JSON.parse(result.response.text());
-        } catch (_) {
-          return window.offlineGradeRecall(req);
+        for (const modelName of GEMINI_MODELS) {
+          try {
+            const model = getGenerativeModel(ai, {
+              model: modelName,
+              generationConfig: recallGenerationConfig
+            });
+            const result = await withTimeout(model.generateContent(prompt), 8000);
+            return JSON.parse(result.response.text());
+          } catch (_) {}
         }
+        return window.offlineGradeRecall(req);
       }
 
       window.LOCI_BACKEND = { generatePalace, evaluateRecall };

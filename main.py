@@ -44,6 +44,14 @@ class RecallEvaluationResponse(BaseModel):
     feedback: str = Field(description="1-sentence Socratic feedback reinforcing the spatial anchor")
 
 
+GEMINI_MODELS = [
+    "gemini-3.5-flash-lite",
+    "gemini-3.7-flash",
+    "gemini-3.5-flash",
+    "gemini-3.8-flash",
+]
+
+
 @app.post("/api/generate-palace")
 async def generate_palace(
     topic: str = Form(...),
@@ -56,60 +64,51 @@ async def generate_palace(
         image_bytes = await image.read()
         mime_type = image.content_type or "image/jpeg"
 
-        grounded_context = ""
         grounded_urls = []
-        if use_search_grounding.lower() == "true" and len(study_notes.strip()) < 40:
-            try:
-                search_resp = client.models.generate_content(
-                    model="gemini-3.8-flash",
-                    contents=f"Extract 5 high-yield, technically accurate key terms and definitions for studying: {topic}. Be concise.",
-                    config=types.GenerateContentConfig(
-                        tools=[types.Tool(google_search=types.GoogleSearch())]
-                    )
-                )
-                grounded_context = search_resp.text or ""
-                if search_resp.candidates and search_resp.candidates[0].grounding_metadata:
-                    chunks = search_resp.candidates[0].grounding_metadata.grounding_chunks or []
-                    for c in chunks[:3]:
-                        if c.web and c.web.uri:
-                            grounded_urls.append(c.web.title or c.web.uri)
-            except Exception:
-                grounded_context = ""
+        grounded_links = []
 
         prompt = f"""
-You are a computational cognitive neuroscientist specializing in the Method of Loci (Spatial Memory Palaces) and Targeted Memory Reactivation (TMR).
-
-Analyze this room image and identify exactly 5 distinct, well-spaced physical objects across the scene from left to right.
-For each physical object:
+Analyze this room image and identify 5 distinct, well-spaced physical objects from left to right.
+For each of the 5 objects:
 1. Return its exact 2D bounding box `box_2d` in `[ymin, xmin, ymax, xmax]` format normalized from 0 to 1000.
-2. Map one core concept from the study material below onto that physical object.
-3. Create an unforgettable, bizarre, multisensory visual association (`sensory_mnemonic`) where the concept physically interacts with that specific object in the room.
+2. Map one core concept from the topic below onto that physical object.
+3. Write a concise, playful 1-sentence visual story (`sensory_mnemonic`) where the concept physically interacts with that specific object in the room.
 4. Assign a distinct acoustic cue frequency (`acoustic_cue_hz`) between 220 and 660 Hz.
-5. Write a Socratic recall question.
+5. Write a clear 1-sentence Socratic recall question.
 
 TARGET TOPIC: {topic}
 USER STUDY MATERIAL: {study_notes}
-GROUNDED KNOWLEDGE CONTEXT: {grounded_context}
 """
 
-        response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=[
-                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-                prompt
-            ],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=MemoryPalaceResponse,
-                temperature=0.4,
-            )
-        )
+        last_err = None
+        result_data = None
+        for model_name in GEMINI_MODELS:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=[
+                        types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                        prompt
+                    ],
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=MemoryPalaceResponse,
+                        temperature=0.35,
+                    )
+                )
+                result_data = json.loads(response.text)
+                break
+            except Exception as err:
+                last_err = err
 
-        result_data = json.loads(response.text)
+        if result_data is None:
+            raise last_err or RuntimeError("All Gemini models failed")
+
+        result_data["grounded_links"] = grounded_links
         if grounded_urls:
             result_data["grounded_sources"] = grounded_urls
         elif not result_data.get("grounded_sources"):
-            result_data["grounded_sources"] = ["Gemini 3.8 Flash Multimodal Spatial Engine"]
+            result_data["grounded_sources"] = ["Gemini Multimodal Spatial Engine"]
 
         return JSONResponse(content=result_data)
 
@@ -130,16 +129,21 @@ Learner's Response: {req.user_answer}
 
 Grade semantically (paraphrased accurate understanding should score 85-100). If partially correct or wrong, give a brief 1-sentence Socratic cue referencing the physical anchor ({req.object_name}).
 """
-        response = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=RecallEvaluationResponse,
-                temperature=0.2,
-            )
-        )
-        return JSONResponse(content=json.loads(response.text))
+        for model_name in GEMINI_MODELS:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=RecallEvaluationResponse,
+                        temperature=0.2,
+                    )
+                )
+                return JSONResponse(content=json.loads(response.text))
+            except Exception:
+                continue
+        raise RuntimeError("Fallback to offline grader")
     except Exception:
         user_low = req.user_answer.lower()
         term_low = req.concept_term.lower()

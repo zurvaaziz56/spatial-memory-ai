@@ -151,6 +151,7 @@ Grade semantically (paraphrased accurate understanding should score 85-100). If 
         })
 
 
+app.mount("/rooms", StaticFiles(directory="static/rooms"), name="rooms")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")

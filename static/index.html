@@ -3,272 +3,366 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spatial Memory AI — Google Cloud AI Builder Cup</title>
+  <title>Roomory — There’s always room to remember.</title>
   <link rel="icon" href="data:," />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes pulse-ring {
-      0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8); }
+      0% { transform: scale(0.92); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.85); }
       70% { transform: scale(1.1); box-shadow: 0 0 0 14px rgba(56, 189, 248, 0); }
-      100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+      100% { transform: scale(0.92); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
     }
     .pin-pulse { animation: pulse-ring 2s infinite; }
     .bbox-overlay { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-400 selection:text-slate-950">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/20" id="brand-icon">L</div>
+  <!-- TOP HEADER & 3-SCREEN FLOW BAR -->
+  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <!-- Brand -->
+      <button onclick="switchScreen('start')" class="flex items-center gap-3 text-left group">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition" id="brand-icon">R</div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 id="brand-name" class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-indigo-300 bg-clip-text text-transparent">LociOS</h1>
-            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Powered by Gemini 3.8</span>
+            <h1 id="brand-name" class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-indigo-300 bg-clip-text text-transparent">Roomory</h1>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">App Check Protected</span>
           </div>
-          <p id="brand-tagline" class="text-xs text-slate-300">Turn any room photo into an interactive visual memory guide</p>
+          <p id="brand-tagline" class="text-xs text-slate-400">There’s always room to remember.</p>
         </div>
-      </div>
+      </button>
 
-      <!-- Mode Switcher Tabs -->
-      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button onclick="switchMode('palace')" id="tab-palace" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition">1. Explore Room</button>
-        <button onclick="switchMode('sprint')" id="tab-sprint" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">2. Practice Quiz</button>
-        <button onclick="switchMode('abtest')" id="tab-abtest" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">3. 60s Memory Challenge</button>
-      </div>
+      <!-- 3-Screen Navigation -->
+      <nav aria-label="Steps" class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button onclick="switchScreen('start')" id="nav-start" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 transition">
+          1. Start
+        </button>
+        <span class="text-slate-600 px-1 text-xs">→</span>
+        <button onclick="switchScreen('room')" id="nav-room" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+          2. Your Room
+        </button>
+        <span class="text-slate-600 px-1 text-xs">→</span>
+        <button onclick="switchScreen('quiz')" id="nav-quiz" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+          3. Test Yourself
+        </button>
+      </nav>
 
-      <!-- Simple Benefit Pill -->
-      <div class="hidden lg:flex items-center gap-4 bg-slate-950/90 border border-emerald-500/30 px-3.5 py-1.5 rounded-xl">
+      <!-- Real Quiz Score Pill -->
+      <div class="flex items-center gap-3 bg-slate-950/90 border border-slate-800 px-3.5 py-1.5 rounded-xl">
         <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400">Memory Boost</div>
-          <div class="text-sm font-bold text-emerald-400">2.4x Better Recall</div>
-        </div>
-        <div class="h-6 w-px bg-slate-800"></div>
-        <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400">Setup Time</div>
-          <div class="text-sm font-bold text-cyan-300">Ready in 4 Seconds</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Your Quiz Score</div>
+          <div id="header-score-badge" class="text-sm font-black text-cyan-400">–</div>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
+  <main class="max-w-6xl mx-auto px-4 py-6">
 
-    <!-- SIMPLE 3-STEP HOW IT WORKS BANNER -->
-    <div class="mb-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
-        <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">1</span>
-        <div class="text-xs"><strong class="text-white">Pick a Room or Upload Yours:</strong> <span class="text-slate-400">Try a sample below or snap your desk.</span></div>
-      </div>
-      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
-        <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center shrink-0">2</span>
-        <div class="text-xs"><strong class="text-white">Click Numbered Pins:</strong> <span class="text-slate-400">Each object holds a vivid story & sound cue.</span></div>
-      </div>
-      <div class="flex items-center gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4 py-2.5">
-        <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">3</span>
-        <div class="text-xs"><strong class="text-white">Take the Quick Quiz:</strong> <span class="text-slate-400">Test what you remember in plain English.</span></div>
-      </div>
+    <!-- ON-PAGE MESSAGE BANNER (Replaces all alert() dialogs) -->
+    <div id="page-banner" class="hidden mb-6 p-4 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-amber-200 text-sm flex items-center justify-between gap-4">
+      <span id="page-banner-text"></span>
+      <button onclick="hideBanner()" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 shrink-0">Dismiss</button>
     </div>
 
-    <!-- SAMPLE TOPICS BAR + CUSTOM ROOM UPLOAD -->
-    <section class="mb-6 bg-slate-900/70 border border-slate-800 rounded-2xl p-4">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 mr-1">Try a Sample Topic:</span>
-          <button onclick="loadPreset('med')" id="preset-med" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
-            🧠 Medicine & Pharmacology (Study Desk)
-          </button>
-          <button onclick="loadPreset('arch')" id="preset-arch" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            ☁️ Cloud & System Design (Office Lounge)
-          </button>
-          <button onclick="loadPreset('lang')" id="preset-lang" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
-            🌏 Mandarin Business Terms (Studio)
+    <!-- GENERATION PROGRESS OVERLAY (Hides old room while scanning) -->
+    <section id="loading-screen" class="hidden max-w-xl mx-auto my-12 bg-slate-900 border border-cyan-500/40 rounded-3xl p-8 text-center shadow-2xl">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center">
+        <div class="w-7 h-7 border-3 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      <h2 class="text-xl font-extrabold text-white" id="loading-title">Building Your Memory Room…</h2>
+      <p class="text-xs text-slate-400 mt-1">This usually takes about 8–15 seconds.</p>
+
+      <div class="mt-6 space-y-3 text-left max-w-sm mx-auto">
+        <div id="step-progress-1" class="flex items-center gap-3 p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-xs font-semibold text-cyan-200">
+          <span class="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 font-black flex items-center justify-center text-[11px]">1</span>
+          <span>Finding 5 objects in your room photo…</span>
+        </div>
+        <div id="step-progress-2" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400">
+          <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-[11px]">2</span>
+          <span>Researching key facts & definitions…</span>
+        </div>
+        <div id="step-progress-3" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400">
+          <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-[11px]">3</span>
+          <span>Writing unforgettable visual stories…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         SCREEN 1: START
+         ========================================================== -->
+    <section id="screen-start" class="space-y-8">
+      <!-- Hero + Big Upload Button -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 border border-slate-800 rounded-3xl p-6 md:p-8 text-center max-w-3xl mx-auto shadow-xl">
+        <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 mb-3">
+          Visual Room Memory
+        </span>
+        <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+          Remember anything by pinning it to objects in your room.
+        </h2>
+        <p class="text-sm text-slate-300 mt-2 max-w-xl mx-auto">
+          Upload a photo of your desk or bedroom—or pick a sample room below—and Roomory turns 5 everyday objects into memorable mini-stories you can quiz yourself on.
+        </p>
+
+        <div class="mt-6">
+          <button onclick="toggleUploadForm()" id="big-upload-cta" class="px-6 py-3.5 rounded-2xl text-sm md:text-base font-extrabold bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/25 inline-flex items-center gap-2">
+            <span>📷 Upload a photo of your room</span>
           </button>
         </div>
 
-        <button onclick="toggleUploadDrawer()" class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-950 hover:opacity-95 transition flex items-center gap-1.5 shadow-md">
-          <span>📷 Use Your Own Room Photo + Any Topic</span>
+        <!-- Expandable Upload Form -->
+        <div id="upload-form-panel" class="hidden mt-6 pt-6 border-t border-slate-800 text-left grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label for="custom-image" class="block text-xs font-bold text-slate-200 mb-1.5">1. Choose your room photo</label>
+            <input type="file" id="custom-image" accept="image/*" class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 bg-slate-950 border border-slate-800 rounded-xl p-1.5" />
+          </div>
+          <div>
+            <label for="custom-topic" class="block text-xs font-bold text-slate-200 mb-1.5">2. What do you want to remember?</label>
+            <input type="text" id="custom-topic" placeholder="e.g., Everyday Spanish, Planets, Grocery list..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400" />
+          </div>
+          <div>
+            <label for="custom-notes" class="block text-xs font-bold text-slate-200 mb-1.5">3. Specific items (optional)</label>
+            <input type="text" id="custom-notes" placeholder="Leave blank and AI will pick 5 items" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400" />
+          </div>
+          <div class="md:col-span-3 flex justify-end pt-1">
+            <button onclick="runLiveGeminiScan()" id="scan-btn" class="px-5 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-md">
+              Build My Memory Room →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Sample Rooms with Real Photos & Everyday Topics -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-300">Or jump right in with a sample room:</h3>
+          <span class="text-xs text-slate-400">Click any room photo to explore its 5 pins</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Sample 1: Spanish Words (Study Desk) -->
+          <button onclick="selectPresetAndOpen('spanish')" id="preset-card-spanish" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+              <img src="/rooms/spanish_desk.jpg" alt="Cozy Study Desk" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
+                5 Pins · Study Desk
+              </span>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Everyday Spanish Words</div>
+                <p class="text-xs text-slate-400 mt-1">Learn 5 useful Spanish words pinned to a coffee mug, notebook, plant, headphones, and lamp.</p>
+              </div>
+              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+            </div>
+          </button>
+
+          <!-- Sample 2: Planets (Cozy Bedroom) -->
+          <button onclick="selectPresetAndOpen('planets')" id="preset-card-planets" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+              <img src="/rooms/planets_bedroom.jpg" alt="Cozy Bedroom Corner" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
+                5 Pins · Bedroom Corner
+              </span>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Solar System Planets</div>
+                <p class="text-xs text-slate-400 mt-1">Remember Mercury, Venus, Mars, Jupiter, and Saturn anchored around a bedroom corner.</p>
+              </div>
+              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+            </div>
+          </button>
+
+          <!-- Sample 3: Shopping List (Kitchen Counter) -->
+          <button onclick="selectPresetAndOpen('shopping')" id="preset-card-shopping" class="group text-left bg-slate-900 border border-slate-800 hover:border-cyan-400/70 rounded-2xl overflow-hidden transition shadow-lg flex flex-col">
+            <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+              <img src="/rooms/kitchen_shopping.jpg" alt="Modern Kitchen Counter" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-950/85 text-cyan-300 border border-cyan-400/30">
+                5 Pins · Kitchen Counter
+              </span>
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="text-base font-extrabold text-white group-hover:text-cyan-300 transition">Weekend Taco Night List</div>
+                <p class="text-xs text-slate-400 mt-1">Never forget avocados, limes, cilantro, tortillas, and hot sauce using your kitchen counter.</p>
+              </div>
+              <div class="mt-3 text-xs font-bold text-cyan-400">Explore this room →</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         SCREEN 2: YOUR ROOM
+         ========================================================== -->
+    <section id="screen-room" class="hidden space-y-5">
+      <!-- Quick room switcher bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/70 border border-slate-800 rounded-2xl px-4 py-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold text-slate-400 mr-1">Switch Room:</span>
+          <button onclick="loadPreset('spanish')" id="preset-spanish" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 transition">
+            🇪🇸 Spanish Words
+          </button>
+          <button onclick="loadPreset('planets')" id="preset-planets" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
+            🪐 Planets
+          </button>
+          <button onclick="loadPreset('shopping')" id="preset-shopping" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
+            🛒 Shopping List
+          </button>
+          <button onclick="openUploadFromRoom()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-cyan-300 border border-cyan-500/30 hover:bg-slate-700 transition">
+            + Upload Your Photo
+          </button>
+        </div>
+        <button onclick="switchScreen('quiz')" class="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow">
+          Test Yourself on This Room →
         </button>
       </div>
 
-      <!-- Collapsible Live Upload Drawer -->
-      <div id="upload-drawer" class="hidden mt-4 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-200 mb-1">Step 1: Choose a photo of your room or desk</label>
-          <input type="file" id="custom-image" accept="image/*" class="w-full text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 bg-slate-950 border border-slate-800 rounded-lg p-1.5" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-200 mb-1">Step 2: What do you want to learn?</label>
-          <input type="text" id="custom-topic" placeholder="e.g., Spanish verbs, Biology, World History, Kubernetes..." class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
-        </div>
-        <div class="flex items-end gap-2">
-          <div class="flex-1">
-            <label class="block text-xs font-semibold text-slate-200 mb-1">Step 3: Paste your own notes (optional)</label>
-            <input type="text" id="custom-notes" placeholder="Leave blank and AI will find the key facts for you" class="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500" />
-          </div>
-          <button onclick="runLiveGeminiScan()" id="scan-btn" class="px-4 py-2 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition whitespace-nowrap">
-            Create My Room Guide
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODE 1: SPATIAL ROOM PALACE CANVAS -->
-    <section id="view-palace" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400" id="palace-topic-badge">Interactive Room Map</span>
-            <h2 class="text-base font-bold text-white" id="palace-title">Loading Room...</h2>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="playFullRoomTour()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 hover:bg-indigo-500/30 transition">
-              🔊 Listen to Guided Audio Tour
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Interactive Room Photo with Numbered Pins -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400">Step 2 · Click Each Pin in Order</span>
+              <h2 class="text-lg font-extrabold text-white" id="palace-title">Everyday Spanish Words</h2>
+            </div>
+            <button onclick="playFullRoomTour()" id="tour-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 hover:bg-indigo-500/30 transition">
+              🔊 Auto-Play All 5 Stories
             </button>
           </div>
-        </div>
 
-        <div class="relative w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 aspect-[16/10]" id="canvas-container">
-          <canvas id="room-backdrop-canvas" width="960" height="600" class="w-full h-full object-cover"></canvas>
-          <img id="uploaded-room-img" class="hidden w-full h-full object-cover" alt="Uploaded Room" />
-          <div id="pins-layer" class="absolute inset-0"></div>
-        </div>
-
-        <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
-          <span id="grounding-bar">Source: Gemini 3.8</span>
-          <span class="text-cyan-300 font-medium">👆 Click any numbered circle on the picture to see & hear its memory story</span>
-        </div>
-      </div>
-
-      <div class="lg:col-span-5 flex flex-col gap-4">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-cyan-500/40 rounded-2xl p-5 shadow-xl">
-          <div class="flex items-center justify-between mb-2">
-            <span id="active-station-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-400 text-slate-950">Spot #1</span>
-            <span id="active-coords-pill" class="hidden text-[11px] font-mono text-slate-500"></span>
-          </div>
-          <div class="text-xs uppercase tracking-wider text-cyan-300 font-semibold mb-0.5">Room Object: <span id="active-object" class="text-white">Architect Desk Lamp</span></div>
-          <h3 id="active-term" class="text-xl font-extrabold text-white mt-1">Select a Pin</h3>
-          <p id="active-def" class="text-sm text-slate-200 mt-1.5 leading-relaxed"></p>
-
-          <div class="mt-4 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mb-1">💡 Vivid Picture to Imagine (Memory Trick)</div>
-            <p id="active-mnemonic" class="text-xs text-slate-100 leading-relaxed italic"></p>
+          <div class="relative w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 aspect-[16/10]" id="canvas-container">
+            <img id="room-photo-img" src="/rooms/spanish_desk.jpg" class="w-full h-full object-cover" alt="Memory Room" />
+            <div id="pins-layer" class="absolute inset-0"></div>
           </div>
 
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2">
-            <button onclick="replayActiveAudio()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
-              🔊 Hear Sound & Story
-            </button>
-            <button onclick="switchMode('sprint')" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-md">
-              Quiz Yourself on This Room →
-            </button>
+          <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+            <div id="grounding-bar">AI-generated — double-check</div>
+            <span class="text-cyan-300 font-medium">👆 Click pins 1 to 5 to see & hear each memory story</span>
           </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex-1">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">All Memory Spots in This Room (Left to Right)</h4>
-          <div id="station-list" class="space-y-2"></div>
-        </div>
-      </div>
-    </section>
+        <!-- Right: Selected Pin Story Card + Pin List -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-cyan-500/40 rounded-2xl p-5 shadow-xl">
+            <div class="flex items-center justify-between mb-2">
+              <span id="active-station-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-400 text-slate-950">Pin #1 of 5</span>
+              <span class="text-xs text-slate-400">Object: <strong id="active-object" class="text-white">Yellow Coffee Mug</strong></span>
+            </div>
 
-    <!-- MODE 2: PRACTICE QUIZ -->
-    <section id="view-sprint" class="hidden max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Step 2 · Quick Practice</span>
-          <h2 class="text-xl font-extrabold text-white">Room Memory Quiz</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Picture the object in the room and explain the concept in your own words—no need to be word-for-word!</p>
-        </div>
-        <div class="text-right">
-          <div class="text-xs text-slate-400">Your Score</div>
-          <div id="sprint-score-badge" class="text-lg font-black text-cyan-400">100%</div>
-        </div>
-      </div>
+            <h3 id="active-term" class="text-xl font-extrabold text-white mt-1">Select a Pin</h3>
+            <p id="active-def" class="text-sm text-slate-200 mt-1 leading-relaxed"></p>
 
-      <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 mb-2">
-          <span>Picture this object: <strong id="sprint-object" class="text-cyan-300"></strong></span>
-          <button onclick="playSprintCueTone()" class="text-indigo-300 hover:underline font-semibold">🎵 Play Sound Hint</button>
-        </div>
-        <p id="sprint-question" class="text-base font-bold text-white leading-snug"></p>
-      </div>
+            <div class="mt-4 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mb-1">💡 Silly Story to Picture</div>
+              <p id="active-mnemonic" class="text-xs text-slate-100 leading-relaxed italic"></p>
+            </div>
 
-      <div class="space-y-3">
-        <textarea id="sprint-input" rows="3" placeholder="Type what you remember in plain English..." class="w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm text-white focus:outline-none focus:border-cyan-400"></textarea>
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <button onclick="showSprintHint()" class="text-xs text-cyan-300 hover:underline font-medium">💡 Show me the story hint</button>
-          <div class="flex gap-2">
-            <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition">Check My Answer</button>
-            <button onclick="nextSprintCard()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Next Question →</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="sprint-feedback-box" class="hidden mt-4 p-4 rounded-xl border"></div>
-    </section>
-
-    <!-- MODE 3: 60-SECOND MEMORY CHALLENGE -->
-    <section id="view-abtest" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6">
-      <div class="max-w-4xl mx-auto">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">See Why It Works</span>
-            <h2 class="text-xl font-extrabold text-white">60-Second Memory Challenge: Normal Flashcards vs. Room Memory</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Compare how much easier it is to remember facts when they are tied to objects in a room.</p>
-          </div>
-          <button onclick="startABTrial()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-400 text-slate-950 hover:bg-emerald-300 transition shadow-lg shadow-emerald-500/20">
-            ▶ Start 60s Challenge
-          </button>
-        </div>
-
-        <div id="ab-stage" class="p-5 rounded-2xl bg-slate-950 border border-slate-800 mb-6">
-          <div id="ab-instructions" class="text-sm text-slate-300 leading-relaxed">
-            Click <strong>Start 60s Challenge</strong> above to try a quick side-by-side comparison:
-            <ol class="list-decimal list-inside mt-2 space-y-1 text-xs text-slate-400">
-              <li><strong>Plain Flashcards:</strong> Try recalling a term studied without any visual anchor.</li>
-              <li><strong>Room Memory:</strong> Recall a term anchored to a vivid object in the room (like the steaming coffee carafe).</li>
-              <li><strong>See Your Score:</strong> Instantly see how much better visual room anchors work for your brain.</li>
-            </ol>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Average Recall Accuracy</div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-slate-400">Plain Flashcards (Normal Studying)</span>
-                  <span id="ab-bar-control-label" class="font-bold text-slate-300">38%</span>
-                </div>
-                <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="ab-bar-control" class="h-full bg-slate-500 rounded-full transition-all duration-500" style="width: 38%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-cyan-300 font-semibold">Room Objects + Sound Cues (LociOS)</span>
-                  <span id="ab-bar-spatial-label" class="font-bold text-emerald-400">91%</span>
-                </div>
-                <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="ab-bar-spatial" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full transition-all duration-500" style="width: 91%"></div>
-                </div>
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-1">
+              <button onclick="replayActiveAudio()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition">
+                🔊 Hear Sound & Story
+              </button>
+              <div class="flex items-center gap-1.5">
+                <button onclick="stepStation(-1)" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">← Prev</button>
+                <button onclick="stepStation(1)" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Next Pin →</button>
               </div>
             </div>
           </div>
 
-          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Why Room Memory Works</div>
-            <p class="text-xs text-slate-300 leading-relaxed my-2">
-              Your brain isn't built to memorize plain lists—they fade after a few minutes. But you naturally remember where things are in your bedroom or desk! By attaching concepts to real objects in a room with a funny visual story, your brain locks the memory in effortlessly.
-            </p>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-              <span class="text-slate-400">Memory Improvement:</span>
-              <span id="ab-lift-badge" class="text-base font-black text-emerald-400">2.39x Easier to Remember</span>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex-1">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">All 5 Objects in This Room</h4>
+            <div id="station-list" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         SCREEN 3: TEST YOURSELF (Shows room photo + highlighted pin + optional 60s timer)
+         ========================================================== -->
+    <section id="screen-quiz" class="hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 rounded-2xl px-4 py-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Step 3 · Test Yourself</span>
+          <h2 class="text-lg font-extrabold text-white">Look at the highlighted pin and recall what’s there</h2>
+        </div>
+
+        <!-- Optional 60s Timed Challenge Toggle (uses current room & real countdown timer) -->
+        <div class="flex items-center gap-3">
+          <div id="timer-pill" class="hidden px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-extrabold">
+            ⏱️ <span id="timer-seconds">60</span>s left
+          </div>
+          <button onclick="toggleTimedChallenge()" id="timed-mode-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/40 hover:bg-amber-400/25 transition">
+            ⚡ Start 60s Timed Challenge
+          </button>
+          <button onclick="switchScreen('room')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+            ← Back to Room
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Room Photo with ONLY the Current Quiz Pin Highlighted -->
+        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2.5 text-xs">
+            <span class="font-bold text-cyan-300" id="quiz-room-title">Everyday Spanish Words</span>
+            <span class="text-slate-400" id="quiz-pin-counter">Pin 1 of 5</span>
+          </div>
+          <div class="relative w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 aspect-[16/10]">
+            <img id="quiz-room-img" src="/rooms/spanish_desk.jpg" class="w-full h-full object-cover" alt="Quiz Room" />
+            <div id="quiz-pins-layer" class="absolute inset-0"></div>
+          </div>
+          <p class="text-xs text-slate-400 mt-2.5">
+            Look at the glowing pin on the <strong id="quiz-object-inline" class="text-white">Yellow Coffee Mug</strong>. What did we attach to it?
+          </p>
+        </div>
+
+        <!-- Right: Question, Answer Box, Feedback, and Score -->
+        <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                Object: <span id="sprint-object">#1 Yellow Coffee Mug</span>
+              </span>
+              <div class="text-right">
+                <span class="text-xs text-slate-400 mr-1.5">Score:</span>
+                <span id="sprint-score-badge" class="text-base font-black text-cyan-400">–</span>
+              </div>
             </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 mb-4">
+              <p id="sprint-question" class="text-base font-bold text-white leading-snug"></p>
+              <div class="mt-2.5 flex flex-wrap items-center gap-3 text-xs">
+                <button onclick="playSprintCueTone()" class="text-indigo-300 hover:underline font-semibold">🎵 Play Sound Clue</button>
+                <button onclick="showSprintHint()" class="text-cyan-300 hover:underline font-semibold">💡 Show Story Hint</button>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <textarea id="sprint-input" rows="3" placeholder="Type the word or idea in your own words..." class="w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm text-white focus:outline-none focus:border-cyan-400"></textarea>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <button onclick="prevSprintCard()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">← Previous</button>
+                <div class="flex gap-2">
+                  <button onclick="evaluateSprintAnswer()" id="sprint-submit-btn" class="px-5 py-2 rounded-xl text-xs font-extrabold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition shadow">
+                    Check Answer
+                  </button>
+                  <button onclick="nextSprintCard()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+                    Next Pin →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="sprint-feedback-box" class="hidden mt-4 p-4 rounded-xl border text-xs"></div>
+          </div>
+
+          <div class="mt-6 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <span>Tip: You don’t need exact wording—just the main idea!</span>
+            <button onclick="resetQuizScore()" class="text-slate-400 hover:text-white underline">Reset score</button>
           </div>
         </div>
       </div>
@@ -278,313 +372,309 @@
 
   <script>
     const BRAND_CONFIG = {
-      name: "LociOS",
-      tagline: "Turn any room photo into an interactive visual memory guide",
-      iconLetter: "L"
+      name: "Roomory",
+      tagline: "There’s always room to remember.",
+      iconLetter: "R"
     };
 
-    document.getElementById("brand-name").textContent = BRAND_CONFIG.name;
-    document.getElementById("brand-tagline").textContent = BRAND_CONFIG.tagline;
-    document.getElementById("brand-icon").textContent = BRAND_CONFIG.iconLetter;
-    document.title = `${BRAND_CONFIG.name} — Google Cloud AI Builder Cup`;
-
+    // Short titles, real room photos, and everyday topics
     const PRESETS = {
-      med: {
-        title: "USMLE Neuropharmacology & Autonomic Receptors",
-        sceneTheme: "desk",
-        grounded_sources: ["Goodman & Gilman Pharmacological Basis", "Gemini 3.8 Spatial Engine"],
+      spanish: {
+        title: "Everyday Spanish Words",
+        photoUrl: "/rooms/spanish_desk.jpg",
+        grounded_links: [],
         anchors: [
           {
             id: 1,
-            object_name: "Brass Architect Lamp",
-            box_2d: [160, 80, 520, 240],
-            concept_term: "Pralidoxime (2-PAM)",
-            concept_definition: "Reactivates acetylcholinesterase (AChE) by cleaving organophosphate bonds before 'aging' occurs.",
-            sensory_mnemonic: "The Brass Lamp comes alive with glowing green sparks, using a giant crowbar labeled '2-PAM' to pry sticky toxic organophosphate glue off its light switch before it hardens forever.",
+            object_name: "Yellow Coffee Mug",
+            box_2d: [530, 95, 770, 240],
+            concept_term: "Madrugar — To wake up early",
+            concept_definition: "Spanish verb meaning to get up at dawn or very early in the morning.",
+            sensory_mnemonic: "A tiny rooster in pajamas leaps out of the Yellow Coffee Mug and crows into a megaphone while splashing hot espresso.",
             acoustic_cue_hz: 262,
-            socratic_question: "Look at the Brass Lamp on the far left: what antidote pries organophosphates off AChE before aging locks it?"
+            socratic_question: "Look at the Yellow Coffee Mug on the left: what Spanish verb means 'to wake up early'?"
           },
           {
             id: 2,
-            object_name: "Dual Ultrawide Monitor",
-            box_2d: [180, 290, 490, 620],
-            concept_term: "Lambert-Eaton Myasthenic Syndrome",
-            concept_definition: "Autoantibodies against presynaptic voltage-gated calcium (Ca2+) channels; muscle strength improves with repeated use.",
-            sensory_mnemonic: "Blocks of chalky calcium are jammed inside the Monitor screen; every time you tap the screen repeatedly, the brightness gets stronger and stronger instead of fading.",
+            object_name: "Open Notebook",
+            box_2d: [700, 175, 935, 540],
+            concept_term: "Olvidar — To forget",
+            concept_definition: "Spanish verb meaning to forget or leave something behind.",
+            sensory_mnemonic: "All the handwritten ink on the Open Notebook suddenly turns into butterflies and flies off the page so the page goes completely blank.",
             acoustic_cue_hz: 330,
-            socratic_question: "Focus on the Center Monitor that brightens when tapped repeatedly: which neuromuscular syndrome targets presynaptic Ca2+ channels?"
+            socratic_question: "Picture the Open Notebook whose words fly away: what Spanish verb means 'to forget'?"
           },
           {
             id: 3,
-            object_name: "Pour-Over Coffee Carafe",
-            box_2d: [530, 320, 780, 460],
-            concept_term: "Dantrolene (Ryanodine RyR1 Blocker)",
-            concept_definition: "Prevents Ca2+ release from the sarcoplasmic reticulum in skeletal muscle; primary treatment for malignant hyperthermia.",
-            sensory_mnemonic: "The Coffee Carafe is boiling over in a volcano of 'Malignant Hyperthermia' steam until a giant dandelion ('Dantrolene') plugs the spout and freezes it solid.",
+            object_name: "Green Succulent Plant",
+            box_2d: [510, 455, 720, 550],
+            concept_term: "Crecer — To grow",
+            concept_definition: "Spanish verb meaning to grow or sprout.",
+            sensory_mnemonic: "The little Green Succulent suddenly shoots up like a giant beanstalk, lifting the ceiling with a loud 'CRACK!'",
             acoustic_cue_hz: 392,
-            socratic_question: "Look at the steaming Coffee Carafe on the desk mat: which RyR1 blocker stops malignant hyperthermia?"
+            socratic_question: "Look at the Green Succulent in the middle: what Spanish verb means 'to grow'?"
           },
           {
             id: 4,
-            object_name: "Monstera Potted Plant",
-            box_2d: [200, 680, 560, 880],
-            concept_term: "Atropine (Muscarinic Antagonist)",
-            concept_definition: "Competitive antagonist at M1-M5 acetylcholine receptors; reverses bradycardia and 'DUMBBELLS' cholinergic crisis.",
-            sensory_mnemonic: "A golden trophy ('A-Trophy / Atropine') sits inside the Monstera Plant, absorbing floodwater and drying up all the sweating leaves instantly.",
+            object_name: "Black Headphones",
+            box_2d: [640, 585, 835, 775],
+            concept_term: "Escuchar — To listen",
+            concept_definition: "Spanish verb meaning to listen or pay attention to sound.",
+            sensory_mnemonic: "The Black Headphones sprout two giant cartoon ears that wiggle and dance to a salsa beat on the desk.",
             acoustic_cue_hz: 494,
-            socratic_question: "Glance at the Monstera Plant holding the golden trophy: what competitive muscarinic blocker dries up cholinergic crisis?"
+            socratic_question: "Check the Black Headphones on the right: what Spanish verb means 'to listen'?"
           },
           {
             id: 5,
-            object_name: "Studio Bookshelf Speaker",
-            box_2d: [580, 720, 840, 910],
-            concept_term: "Levodopa / Carbidopa",
-            concept_definition: "Carbidopa inhibits peripheral DOPA decarboxylase so Levodopa crosses the blood-brain barrier to convert into central dopamine.",
-            sensory_mnemonic: "A miniature police car ('Carbi-cop') escorts a VIP glowing 'L-DOPA' vinyl record straight through the Speaker's mesh grille barrier without getting hijacked outside.",
+            object_name: "Brass Desk Lamp",
+            box_2d: [95, 640, 755, 925],
+            concept_term: "Brillar — To shine",
+            concept_definition: "Spanish verb meaning to shine, glow, or sparkle brightly.",
+            sensory_mnemonic: "The Brass Desk Lamp shoots a dazzling rainbow disco beam across the desk and wears sunglasses.",
             acoustic_cue_hz: 587,
-            socratic_question: "Check the Studio Speaker on the bottom right: how does the 'Carbi-cop' escort help Levodopa reach the brain?"
+            socratic_question: "Look at the Brass Desk Lamp on the far right: what Spanish verb means 'to shine'?"
           }
         ]
       },
-      arch: {
-        title: "Cloud AI Distributed Systems & Fault Tolerance",
-        sceneTheme: "lounge",
-        grounded_sources: ["Google Cloud Architecture Framework", "Designing Data-Intensive Applications"],
+      planets: {
+        title: "Solar System Planets",
+        photoUrl: "/rooms/planets_bedroom.jpg",
+        grounded_links: [],
         anchors: [
           {
             id: 1,
-            object_name: "Floor-to-Ceiling Glass Window",
-            box_2d: [120, 70, 580, 260],
-            concept_term: "Raft Consensus (Leader Election)",
-            concept_definition: "Randomized election timeouts ensure split votes resolve rapidly so a single leader replicates the log across followers.",
-            sensory_mnemonic: "An inflatable orange whitewater 'Raft' is pressed against the Glass Window, holding a ticking stopwatch that elects one captain before the glass fogs up.",
-            acoustic_cue_hz: 277,
-            socratic_question: "Look at the Glass Window on the left: how does Raft resolve split votes during leader election?"
+            object_name: "Round Wall Clock",
+            box_2d: [70, 135, 275, 240],
+            concept_term: "Mercury — Fastest & Closest Planet",
+            concept_definition: "1st planet from the Sun; zips around the Sun in just 88 Earth days.",
+            sensory_mnemonic: "The Wall Clock's hands spin so fast they catch fire like a silver thermometer, racing through a year in 88 ticks.",
+            acoustic_cue_hz: 262,
+            socratic_question: "Look at the fast-spinning Wall Clock on the top left: which planet is closest to the Sun and orbits in 88 days?"
           },
           {
             id: 2,
-            object_name: "Velvet Mid-Century Sofa",
-            box_2d: [480, 290, 810, 640],
-            concept_term: "Circuit Breaker Pattern",
-            concept_definition: "Trips from Closed -> Open when downstream error thresholds spike, returning fast fallbacks before probing via Half-Open state.",
-            sensory_mnemonic: "The Velvet Sofa suddenly flips upright like a giant electrical breaker switch whenever too many guests sit down at once, bouncing them onto soft fallback cushions.",
-            acoustic_cue_hz: 349,
-            socratic_question: "Picture the Velvet Sofa flipping open under heavy load: what are the three states of the Circuit Breaker pattern?"
+            object_name: "Blue Throw Pillow",
+            box_2d: [480, 175, 720, 340],
+            concept_term: "Venus — Hottest Planet (Thick Clouds)",
+            concept_definition: "2nd planet from the Sun; trapped under a thick greenhouse blanket of carbon dioxide clouds.",
+            sensory_mnemonic: "The Blue Pillow puffs up like a steaming yellow oven mitt, trapping so much heat that it hisses like a sauna.",
+            acoustic_cue_hz: 330,
+            socratic_question: "Focus on the Blue Throw Pillow on the armchair: which planet is the hottest because of its thick cloud blanket?"
           },
           {
             id: 3,
-            object_name: "Hanging Pendant Chandelier",
-            box_2d: [90, 410, 340, 590],
-            concept_term: "Consistent Hashing Ring",
-            concept_definition: "Maps both nodes and data keys onto a 360-degree hash ring using virtual nodes so adding/removing a server only remaps K/N keys.",
-            sensory_mnemonic: "The circular Chandelier spins like a glowing roulette ring; when one lightbulb pops out, its floating holographic data keys slide smoothly to the next bulb clockwise.",
-            acoustic_cue_hz: 440,
-            socratic_question: "Look up at the circular Pendant Chandelier: why does a Consistent Hashing Ring prevent massive cache stampedes when a node drops?"
+            object_name: "Wooden Desk Globe",
+            box_2d: [445, 600, 650, 695],
+            concept_term: "Mars — The Rusty Red Planet",
+            concept_definition: "4th planet from the Sun; red from iron oxide dust and home to Olympus Mons, the tallest volcano.",
+            sensory_mnemonic: "The Wooden Globe turns bright rusty red and erupts a giant volcano of spicy red chili powder across the side table.",
+            acoustic_cue_hz: 392,
+            socratic_question: "Look at the Globe on the side table: which rusty red planet has the tallest volcano in the solar system?"
           },
           {
             id: 4,
-            object_name: "Marble Side Table",
-            box_2d: [560, 680, 830, 880],
-            concept_term: "Transactional Outbox Pattern",
-            concept_definition: "Writes domain state changes and outgoing events into the same local ACID database transaction before asynchronous relay to Pub/Sub.",
-            sensory_mnemonic: "A heavy Marble mailbox is carved directly out of the Side Table's stone slab so a letter and a ledger receipt get stamped together in one single hammer strike.",
-            acoustic_cue_hz: 523,
-            socratic_question: "Inspect the Marble Side Table on the right: how does the Transactional Outbox guarantee dual-write consistency?"
+            object_name: "Framed Mountain Poster",
+            box_2d: [45, 670, 480, 835],
+            concept_term: "Jupiter — Largest Planet & Great Red Spot",
+            concept_definition: "5th and largest planet; a gas giant famous for its centuries-old Great Red Spot storm.",
+            sensory_mnemonic: "A swirling red hurricane the size of three Earths spins right out of the Framed Poster, blowing snow across the wall.",
+            acoustic_cue_hz: 494,
+            socratic_question: "Look at the Framed Poster on the wall: which giant planet is the largest and has the Great Red Spot storm?"
+          },
+          {
+            id: 5,
+            object_name: "Acoustic Guitar",
+            box_2d: [300, 800, 965, 955],
+            concept_term: "Saturn — Icy Ring System",
+            concept_definition: "6th planet from the Sun; surrounded by dazzling rings made of billions of ice and rock chunks.",
+            sensory_mnemonic: "Glowing hula-hoop rings of sparkling ice cubes orbit around the Guitar and strum the strings as they spin.",
+            acoustic_cue_hz: 587,
+            socratic_question: "Look at the Acoustic Guitar on the right: which planet is famous for its bright rings of ice and rock?"
           }
         ]
       },
-      lang: {
-        title: "Mandarin Cross-Border M&A & Contract Law",
-        sceneTheme: "studio",
-        grounded_sources: ["PRC Civil Code Bilingual Glossary", "Gemini 3.8 Grounded Lexicon"],
+      shopping: {
+        title: "Weekend Taco Night List",
+        photoUrl: "/rooms/kitchen_shopping.jpg",
+        grounded_links: [],
         anchors: [
           {
             id: 1,
-            object_name: "Drafting Blueprint Easel",
-            box_2d: [150, 90, 640, 290],
-            concept_term: "Dui-Du Xie-Yi (对赌协议 — Valuation Adjustment Mechanism)",
-            concept_definition: "Earn-out / VAM clause between investors and founders tying equity or cash compensation to future performance targets.",
-            sensory_mnemonic: "Two golden dice are dueling ('Dui-Du') across the tilted Blueprint Easel; as the revenue line on the blueprint rises, the easel tips gold coins to the founder.",
-            acoustic_cue_hz: 293,
-            socratic_question: "Look at the Drafting Easel on the left: what Mandarin legal term means a Valuation Adjustment Mechanism (VAM / bet-on agreement)?"
+            object_name: "Red Toaster",
+            box_2d: [480, 60, 700, 250],
+            concept_term: "3 Ripe Avocados",
+            concept_definition: "Grab 3 slightly soft Hass avocados for fresh guacamole.",
+            sensory_mnemonic: "Three bumpy green avocados pop out of the Red Toaster wearing tiny sombreros and juggling guacamole spoons.",
+            acoustic_cue_hz: 262,
+            socratic_question: "Look at the Red Toaster on the left: what 3 green items are popping out of it for guacamole?"
           },
           {
             id: 2,
-            object_name: "Espresso Machine",
-            box_2d: [380, 350, 690, 560],
-            concept_term: "Jin-Zhi Diao-Cha (尽职调查 — Due Diligence)",
-            concept_definition: "Exhaustive legal, financial, and operational audit required prior to closing a merger or financing round.",
-            sensory_mnemonic: "A detective wearing a magnifying monocle inspects every drop of espresso ('Jin-Zhi / exhaustive duty') under a forensic UV beam before signing the cup.",
-            acoustic_cue_hz: 370,
-            socratic_question: "Focus on the Espresso Machine in the middle: what is the Mandarin phrase for formal Due Diligence?"
+            object_name: "Wooden Cutting Board",
+            box_2d: [420, 265, 660, 445],
+            concept_term: "Corn Tortillas (2 Packs)",
+            concept_definition: "Two packs of warm yellow corn tortillas from the bakery aisle.",
+            sensory_mnemonic: "Two stacks of corn tortillas use the Wooden Cutting Board as a skateboard ramp, doing backflips across the counter.",
+            acoustic_cue_hz: 330,
+            socratic_question: "Picture the Wooden Cutting Board ramp: what bakery item (2 packs) is skateboarding down it?"
           },
           {
             id: 3,
-            object_name: "Acoustic Wall Panel",
-            box_2d: [140, 630, 520, 900],
-            concept_term: "Bu-Ke Kang-Li (不可抗力 — Force Majeure)",
-            concept_definition: "Unforeseeable, unavoidable, and insurmountable objective circumstances exempting contractual liability.",
-            sensory_mnemonic: "A miniature indoor hurricane slams against the Acoustic Wall Panel, but the panel glows with a shield reading 'Bu-Ke Kang-Li' and absorbs the entire shockwave.",
-            acoustic_cue_hz: 466,
-            socratic_question: "Look at the Acoustic Wall Panel on the right: what four-character Mandarin legal doctrine represents Force Majeure?"
+            object_name: "Glass Fruit Bowl",
+            box_2d: [500, 450, 690, 585],
+            concept_term: "Bag of Fresh Limes",
+            concept_definition: "A bag of juicy green limes for squeezing over tacos.",
+            sensory_mnemonic: "A choir of bright green limes inside the Glass Fruit Bowl squirts sour lime juice fountains up to the ceiling while singing opera.",
+            acoustic_cue_hz: 392,
+            socratic_question: "Look at the Glass Fruit Bowl in the center: what sour green citrus fruit is singing inside it?"
+          },
+          {
+            id: 4,
+            object_name: "Stainless Steel Kettle",
+            box_2d: [445, 610, 685, 730],
+            concept_term: "Fresh Cilantro Bunch",
+            concept_definition: "One crisp bunch of fresh green cilantro leaves.",
+            sensory_mnemonic: "Instead of steam, the Steel Kettle whistles and shoots out a giant bouquet of fragrant green cilantro leaves like confetti.",
+            acoustic_cue_hz: 494,
+            socratic_question: "Check the Stainless Steel Kettle: what fresh green herb is bursting out of its spout?"
+          },
+          {
+            id: 5,
+            object_name: "Espresso Machine",
+            box_2d: [295, 740, 700, 955],
+            concept_term: "Smoky Chipotle Hot Sauce",
+            concept_definition: "One bottle of smoky chipotle pepper hot sauce.",
+            sensory_mnemonic: "The Espresso Machine brews glowing fiery red chipotle hot sauce while breathing cartoon dragon smoke.",
+            acoustic_cue_hz: 587,
+            socratic_question: "Look at the Espresso Machine on the far right: what spicy bottle is it brewing?"
           }
         ]
       }
     };
 
-    let currentPalace = PRESETS.med;
+    let currentPalace = PRESETS.spanish;
     let activeAnchorIndex = 0;
     let sprintIndex = 0;
     let sprintCorrect = 0;
     let sprintTotal = 0;
-    let usingCustomImage = false;
     let audioCtx = null;
 
-    function playSpatialChord(freqHz, xmin, xmax) {
+    // 60s Timed Challenge state
+    let timerInterval = null;
+    let timeRemaining = 60;
+    let timedModeActive = false;
+
+    function showBanner(msg, isError = true) {
+      const banner = document.getElementById("page-banner");
+      const text = document.getElementById("page-banner-text");
+      banner.className = isError
+        ? "mb-6 p-4 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-amber-200 text-sm flex items-center justify-between gap-4"
+        : "mb-6 p-4 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-emerald-200 text-sm flex items-center justify-between gap-4";
+      text.textContent = msg;
+      banner.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function hideBanner() {
+      document.getElementById("page-banner").classList.add("hidden");
+    }
+
+    // Shorten long AI titles to a clean 2–6 word heading
+    function makeShortTitle(rawTitle, fallbackTopic) {
+      const base = (fallbackTopic || rawTitle || "My Memory Room").trim();
+      const cleaned = base.replace(/^[:\-–—\s]+/, "").split(/[:.—–-]/)[0].trim();
+      const words = cleaned.split(/\s+/);
+      if (words.length <= 6) return cleaned;
+      return words.slice(0, 5).join(" ") + "…";
+    }
+
+    function playSpatialChord(freq, xmin = 400, xmax = 600) {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === "suspended") audioCtx.resume();
 
         const now = audioCtx.currentTime;
-        const osc1 = audioCtx.createOscillator();
-        const osc2 = audioCtx.createOscillator();
         const panner = audioCtx.createStereoPanner();
-        const gain = audioCtx.createGain();
-
-        const centerNorm = ((xmin + xmax) / 2000);
+        const centerNorm = ((xmin + xmax) / 2) / 1000;
         panner.pan.value = Math.max(-0.85, Math.min(0.85, (centerNorm - 0.5) * 1.7));
+        panner.connect(audioCtx.destination);
 
-        osc1.type = "sine";
-        osc2.type = "triangle";
-        osc1.frequency.setValueAtTime(freqHz, now);
-        osc2.frequency.setValueAtTime(freqHz * 1.498, now);
+        [freq, freq * 1.25, freq * 1.5].forEach((f, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = idx === 0 ? "triangle" : "sine";
+          osc.frequency.setValueAtTime(f, now);
 
-        gain.gain.setValueAtTime(0.001, now);
-        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(0.11 / (idx + 1), now + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
 
-        osc1.connect(panner);
-        osc2.connect(panner);
-        panner.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc1.start(now);
-        osc2.start(now);
-        osc1.stop(now + 0.9);
-        osc2.stop(now + 0.9);
-      } catch (e) {
-        console.warn("AudioContext blocked until user interaction", e);
-      }
+          osc.connect(gain);
+          gain.connect(panner);
+          osc.start(now);
+          osc.stop(now + 0.9);
+        });
+      } catch (_) {}
     }
 
     function speakText(text) {
-      if (!("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.rate = 1.05;
-      utter.pitch = 1.0;
-      window.speechSynthesis.speak(utter);
+      try {
+        if (!("speechSynthesis" in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.04;
+        window.speechSynthesis.speak(u);
+      } catch (_) {}
     }
 
-    function drawPresetRoomScene(theme, anchors, highlightIdx) {
-      const canvas = document.getElementById("room-backdrop-canvas");
-      const ctx = canvas.getContext("2d");
-      const W = canvas.width;
-      const H = canvas.height;
-
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-      if (theme === "desk") {
-        bgGrad.addColorStop(0, "#0f172a");
-        bgGrad.addColorStop(0.65, "#1e293b");
-        bgGrad.addColorStop(0.66, "#334155");
-        bgGrad.addColorStop(1, "#090d16");
-      } else if (theme === "lounge") {
-        bgGrad.addColorStop(0, "#111827");
-        bgGrad.addColorStop(0.7, "#1f2937");
-        bgGrad.addColorStop(1, "#0b0f19");
+    function renderGroundingBar() {
+      const bar = document.getElementById("grounding-bar");
+      const links = (currentPalace.grounded_links || []).filter(l => l && l.uri && /^https?:\/\//i.test(l.uri));
+      if (links.length > 0) {
+        bar.innerHTML = `<span class="text-slate-400">Sources: </span>` + links.map(l => {
+          const safeTitle = (l.title || l.uri).replace(/[<>&"]/g, "");
+          return `<a href="${l.uri}" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline mr-2">${safeTitle}</a>`;
+        }).join(" • ");
       } else {
-        bgGrad.addColorStop(0, "#18181b");
-        bgGrad.addColorStop(0.68, "#27272a");
-        bgGrad.addColorStop(1, "#09090b");
+        bar.textContent = "AI-generated — double-check";
       }
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.strokeStyle = "rgba(148, 163, 184, 0.12)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= W; x += 80) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-      }
-      for (let y = 0; y <= H; y += 60) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-      }
-
-      anchors.forEach((a, idx) => {
-        const [ymin, xmin, ymax, xmax] = a.box_2d;
-        const rx = (xmin / 1000) * W;
-        const ry = (ymin / 1000) * H;
-        const rw = ((xmax - xmin) / 1000) * W;
-        const rh = ((ymax - ymin) / 1000) * H;
-        const isSelected = idx === highlightIdx;
-
-        ctx.fillStyle = isSelected ? "rgba(34, 211, 238, 0.16)" : "rgba(30, 41, 59, 0.78)";
-        ctx.strokeStyle = isSelected ? "#22d3ee" : "rgba(148, 163, 184, 0.35)";
-        ctx.lineWidth = isSelected ? 3 : 1.5;
-
-        ctx.beginPath();
-        ctx.roundRect(rx, ry, rw, rh, 12);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = isSelected ? "#67e8f9" : "#94a3b8";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText(a.object_name, rx + 12, ry + 24);
-      });
     }
 
     function renderPalace() {
       document.getElementById("palace-title").textContent = currentPalace.title;
-      document.getElementById("grounding-bar").textContent =
-        "Sources: " + (currentPalace.grounded_sources || ["Gemini 3.8"]).join(" • ");
-
-      const canvasEl = document.getElementById("room-backdrop-canvas");
-      const imgEl = document.getElementById("uploaded-room-img");
-
-      if (usingCustomImage) {
-        canvasEl.classList.add("hidden");
-        imgEl.classList.remove("hidden");
-      } else {
-        canvasEl.classList.remove("hidden");
-        imgEl.classList.add("hidden");
-        drawPresetRoomScene(currentPalace.sceneTheme || "desk", currentPalace.anchors, activeAnchorIndex);
+      const imgEl = document.getElementById("room-photo-img");
+      if (currentPalace.photoUrl) {
+        imgEl.src = currentPalace.photoUrl;
       }
+
+      renderGroundingBar();
 
       const pinsLayer = document.getElementById("pins-layer");
       pinsLayer.innerHTML = "";
 
       currentPalace.anchors.forEach((anchor, idx) => {
         const [ymin, xmin, ymax, xmax] = anchor.box_2d;
-        const centerX = ((xmin + xmax) / 20);
-        const centerY = ((ymin + ymax) / 20);
+        const centerX = (xmin + xmax) / 20;
+        const centerY = (ymin + ymax) / 20;
         const isSelected = idx === activeAnchorIndex;
 
-        if (usingCustomImage) {
-          const boxDiv = document.createElement("div");
-          boxDiv.className = `absolute bbox-overlay rounded-lg pointer-events-none ${isSelected ? "border-2 border-cyan-400 bg-cyan-400/15" : "border border-white/40 bg-slate-900/20"}`;
-          boxDiv.style.top = `${ymin / 10}%`;
-          boxDiv.style.left = `${xmin / 10}%`;
-          boxDiv.style.width = `${(xmax - xmin) / 10}%`;
-          boxDiv.style.height = `${(ymax - ymin) / 10}%`;
-          pinsLayer.appendChild(boxDiv);
-        }
+        const boxDiv = document.createElement("div");
+        boxDiv.className = `absolute bbox-overlay rounded-xl pointer-events-none ${
+          isSelected ? "border-2 border-cyan-400 bg-cyan-400/15" : "border border-white/30 bg-slate-950/15"
+        }`;
+        boxDiv.style.top = `${ymin / 10}%`;
+        boxDiv.style.left = `${xmin / 10}%`;
+        boxDiv.style.width = `${(xmax - xmin) / 10}%`;
+        boxDiv.style.height = `${(ymax - ymin) / 10}%`;
+        pinsLayer.appendChild(boxDiv);
 
         const pinBtn = document.createElement("button");
         pinBtn.style.top = `${centerY}%`;
         pinBtn.style.left = `${centerX}%`;
-        pinBtn.className = `absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full font-extrabold text-xs flex items-center justify-center transition transform hover:scale-110 ${
+        pinBtn.className = `absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full font-extrabold text-xs flex items-center justify-center transition transform hover:scale-110 shadow-lg ${
           isSelected
             ? "bg-cyan-400 text-slate-950 pin-pulse ring-4 ring-cyan-300/50 z-20"
-            : "bg-slate-900/90 text-cyan-300 border-2 border-cyan-400/70 hover:bg-cyan-500 hover:text-slate-950 z-10"
+            : "bg-slate-900/95 text-cyan-300 border-2 border-cyan-400/80 hover:bg-cyan-400 hover:text-slate-950 z-10"
         }`;
         pinBtn.textContent = anchor.id;
         pinBtn.onclick = () => selectStation(idx, true);
@@ -593,8 +683,7 @@
 
       const active = currentPalace.anchors[activeAnchorIndex];
       if (active) {
-        document.getElementById("active-station-pill").textContent = `Spot #${active.id} of ${currentPalace.anchors.length}`;
-        document.getElementById("active-coords-pill").textContent = `box_2d: [${active.box_2d.join(", ")}]`;
+        document.getElementById("active-station-pill").textContent = `Pin #${active.id} of ${currentPalace.anchors.length}`;
         document.getElementById("active-object").textContent = active.object_name;
         document.getElementById("active-term").textContent = active.concept_term;
         document.getElementById("active-def").textContent = active.concept_definition;
@@ -616,7 +705,7 @@
             <span class="w-6 h-6 rounded-full bg-slate-800 text-cyan-300 text-xs font-bold flex items-center justify-center shrink-0">${a.id}</span>
             <div class="truncate">
               <div class="text-xs font-bold truncate">${a.concept_term}</div>
-              <div class="text-[11px] text-slate-400 truncate">On: ${a.object_name}</div>
+              <div class="text-[11px] text-slate-400 truncate">Pinned to: ${a.object_name}</div>
             </div>
           </div>
           <span class="text-[11px] text-cyan-400 shrink-0 ml-2">🔊 Listen</span>
@@ -637,6 +726,12 @@
       }
     }
 
+    function stepStation(delta) {
+      const len = currentPalace.anchors.length;
+      const next = (activeAnchorIndex + delta + len) % len;
+      selectStation(next, true);
+    }
+
     function replayActiveAudio() {
       selectStation(activeAnchorIndex, true);
     }
@@ -647,100 +742,190 @@
         if (i >= currentPalace.anchors.length) return;
         selectStation(i, true);
         i++;
-        setTimeout(stepTour, 6500);
+        setTimeout(stepTour, 6000);
       }
       stepTour();
     }
 
     function loadPreset(key) {
-      usingCustomImage = false;
+      hideBanner();
       currentPalace = PRESETS[key];
       activeAnchorIndex = 0;
       sprintIndex = 0;
       renderPalace();
-      ["med", "arch", "lang"].forEach(k => {
+      ["spanish", "planets", "shopping"].forEach(k => {
         const btn = document.getElementById(`preset-${k}`);
         if (!btn) return;
         btn.className = k === key
-          ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 transition"
+          ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 transition"
           : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition";
       });
     }
 
-    function toggleUploadDrawer() {
-      const el = document.getElementById("upload-drawer");
-      el.classList.toggle("hidden");
+    function selectPresetAndOpen(key) {
+      loadPreset(key);
+      switchScreen("room");
+    }
+
+    function toggleUploadForm() {
+      const panel = document.getElementById("upload-form-panel");
+      panel.classList.toggle("hidden");
+    }
+
+    function openUploadFromRoom() {
+      switchScreen("start");
+      const panel = document.getElementById("upload-form-panel");
+      panel.classList.remove("hidden");
+      document.getElementById("custom-image").focus();
+    }
+
+    function setProgressStep(stepNum) {
+      [1, 2, 3].forEach(n => {
+        const el = document.getElementById(`step-progress-${n}`);
+        if (!el) return;
+        if (n < stepNum) {
+          el.className = "flex items-center gap-3 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xs font-semibold text-emerald-200";
+        } else if (n === stepNum) {
+          el.className = "flex items-center gap-3 p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-xs font-semibold text-cyan-200";
+        } else {
+          el.className = "flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium text-slate-400";
+        }
+      });
     }
 
     async function runLiveGeminiScan() {
+      hideBanner();
       const fileInput = document.getElementById("custom-image");
       const topicInput = document.getElementById("custom-topic");
       const notesInput = document.getElementById("custom-notes");
       const btn = document.getElementById("scan-btn");
 
       if (!fileInput.files || !fileInput.files[0]) {
-        alert("Please choose a photo of a room or desk first!");
+        showBanner("Please choose a photo of your room or desk first (Step 1).");
         return;
       }
-      const topic = topicInput.value.trim() || "High-Yield Neuroscience & Pharmacology";
+      const rawTopic = topicInput.value.trim() || "Everyday Spanish Words";
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imgEl = document.getElementById("uploaded-room-img");
-        imgEl.src = e.target.result;
-        usingCustomImage = true;
-      };
-      reader.readAsDataURL(fileInput.files[0]);
+      const uploadedDataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+      });
+
+      // Hide old screens and show progress steps while generating
+      ["start", "room", "quiz"].forEach(s => document.getElementById(`screen-${s}`).classList.add("hidden"));
+      const loadingScreen = document.getElementById("loading-screen");
+      loadingScreen.classList.remove("hidden");
+      setProgressStep(1);
+
+      const stepTimer1 = setTimeout(() => setProgressStep(2), 2800);
+      const stepTimer2 = setTimeout(() => setProgressStep(3), 6200);
 
       btn.disabled = true;
-      btn.textContent = "Finding Objects in Room...";
 
       try {
         let data;
         if (window.LOCI_BACKEND) {
           data = await window.LOCI_BACKEND.generatePalace({
             file: fileInput.files[0],
-            topic,
+            topic: rawTopic,
             studyNotes: notesInput.value
           });
         } else {
-          const formData = new FormData();
-          formData.append("image", fileInput.files[0]);
-          formData.append("topic", topic);
-          formData.append("study_notes", notesInput.value);
-          formData.append("use_search_grounding", "true");
+          const controller = new AbortController();
+          const tId = setTimeout(() => controller.abort(), 20000);
+          try {
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+            formData.append("topic", rawTopic);
+            formData.append("study_notes", notesInput.value);
+            formData.append("use_search_grounding", "true");
 
-          const res = await fetch("/api/generate-palace", {
-            method: "POST",
-            body: formData
-          });
-          if (!res.ok) throw new Error(await res.text());
-          data = await res.json();
+            const res = await fetch("/api/generate-palace", {
+              method: "POST",
+              body: formData,
+              signal: controller.signal
+            });
+            if (!res.ok) throw new Error(await res.text());
+            data = await res.json();
+          } finally {
+            clearTimeout(tId);
+          }
         }
 
         currentPalace = {
-          title: data.topic_summary || topic,
-          grounded_sources: data.grounded_sources || ["Gemini 3.8 + Google Search"],
+          title: makeShortTitle(data.topic_summary, rawTopic),
+          photoUrl: uploadedDataUrl,
+          grounded_links: data.grounded_links || [],
           anchors: data.anchors
         };
         activeAnchorIndex = 0;
         sprintIndex = 0;
+        loadingScreen.classList.add("hidden");
         renderPalace();
+        switchScreen("room");
         selectStation(0, true);
       } catch (err) {
-        alert("Could not scan photo: " + err.message);
+        loadingScreen.classList.add("hidden");
+        switchScreen("start");
+        showBanner("We couldn’t scan that photo right now (" + (err.message || "timeout") + "). Try again or pick one of the 3 sample rooms below!");
       } finally {
+        clearTimeout(stepTimer1);
+        clearTimeout(stepTimer2);
         btn.disabled = false;
-        btn.textContent = "Create My Room Guide";
       }
     }
 
+    // Render the Quiz screen, including the Room Photo with the current pin highlighted
     function renderSprintCard() {
-      const a = currentPalace.anchors[sprintIndex % currentPalace.anchors.length];
+      const anchors = currentPalace.anchors;
+      const idx = sprintIndex % anchors.length;
+      const a = anchors[idx];
+
+      document.getElementById("quiz-room-title").textContent = currentPalace.title;
+      document.getElementById("quiz-pin-counter").textContent = `Pin ${idx + 1} of ${anchors.length}`;
+      document.getElementById("quiz-room-img").src = currentPalace.photoUrl || "/rooms/spanish_desk.jpg";
+      document.getElementById("quiz-object-inline").textContent = a.object_name;
+
       document.getElementById("sprint-object").textContent = `#${a.id} ${a.object_name}`;
       document.getElementById("sprint-question").textContent = a.socratic_question;
       document.getElementById("sprint-input").value = "";
       document.getElementById("sprint-feedback-box").classList.add("hidden");
+
+      // Draw pins on the quiz room photo with the current quiz pin highlighted
+      const quizPins = document.getElementById("quiz-pins-layer");
+      quizPins.innerHTML = "";
+      anchors.forEach((anchor, i) => {
+        const [ymin, xmin, ymax, xmax] = anchor.box_2d;
+        const centerX = (xmin + xmax) / 20;
+        const centerY = (ymin + ymax) / 20;
+        const isCurrent = i === idx;
+
+        if (isCurrent) {
+          const boxDiv = document.createElement("div");
+          boxDiv.className = "absolute bbox-overlay rounded-xl pointer-events-none border-2 border-cyan-400 bg-cyan-400/20";
+          boxDiv.style.top = `${ymin / 10}%`;
+          boxDiv.style.left = `${xmin / 10}%`;
+          boxDiv.style.width = `${(xmax - xmin) / 10}%`;
+          boxDiv.style.height = `${(ymax - ymin) / 10}%`;
+          quizPins.appendChild(boxDiv);
+        }
+
+        const pin = document.createElement("button");
+        pin.style.top = `${centerY}%`;
+        pin.style.left = `${centerX}%`;
+        pin.className = `absolute -translate-x-1/2 -translate-y-1/2 rounded-full font-extrabold text-xs flex items-center justify-center transition ${
+          isCurrent
+            ? "w-10 h-10 bg-cyan-400 text-slate-950 pin-pulse ring-4 ring-cyan-300/60 z-20"
+            : "w-7 h-7 bg-slate-900/80 text-slate-400 border border-slate-600 z-10 opacity-65 hover:opacity-100"
+        }`;
+        pin.textContent = anchor.id;
+        pin.onclick = () => {
+          sprintIndex = i;
+          renderSprintCard();
+        };
+        quizPins.appendChild(pin);
+      });
     }
 
     function playSprintCueTone() {
@@ -756,13 +941,52 @@
       box.classList.remove("hidden");
     }
 
+    function updateScoreDisplays() {
+      const text = sprintTotal === 0
+        ? "–"
+        : `${Math.round((sprintCorrect / sprintTotal) * 100)}% (${sprintCorrect}/${sprintTotal})`;
+      document.getElementById("sprint-score-badge").textContent = text;
+      document.getElementById("header-score-badge").textContent = text;
+    }
+
+    function resetQuizScore() {
+      sprintCorrect = 0;
+      sprintTotal = 0;
+      updateScoreDisplays();
+      stopTimedChallenge();
+      showBanner("Quiz score reset.", false);
+    }
+
+    // Offline fallback grader used whenever Gemini takes >20s or errors
+    function offlineGradeRecall(req) {
+      const userLow = (req.user_answer || "").toLowerCase();
+      const termWords = req.concept_term.toLowerCase().split(/[\s—\-()/]+/).filter(w => w.length >= 3);
+      const defWords = req.concept_definition.toLowerCase().split(/\s+/).filter(w => w.length >= 4);
+      const passed = userLow.length >= 2 && (
+        termWords.some(w => userLow.includes(w.slice(0, 4))) ||
+        defWords.slice(0, 6).some(w => userLow.includes(w))
+      );
+      return {
+        score: passed ? 92 : 35,
+        is_correct: passed,
+        feedback: passed
+          ? `Spot on! You remembered what was pinned to the ${req.object_name}.`
+          : `Not quite—picture the story on the ${req.object_name} to recall ${req.concept_term}.`
+      };
+    }
+
     async function evaluateSprintAnswer() {
+      hideBanner();
       const a = currentPalace.anchors[sprintIndex % currentPalace.anchors.length];
       const ans = document.getElementById("sprint-input").value.trim();
-      if (!ans) return;
+      if (!ans) {
+        showBanner("Type your answer first before checking!");
+        return;
+      }
 
       const btn = document.getElementById("sprint-submit-btn");
-      btn.textContent = "Checking...";
+      btn.disabled = true;
+      btn.textContent = "Checking…";
       try {
         const payload = {
           object_name: a.object_name,
@@ -774,17 +998,25 @@
         if (window.LOCI_BACKEND) {
           data = await window.LOCI_BACKEND.evaluateRecall(payload);
         } else {
-          const res = await fetch("/api/evaluate-recall", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          data = await res.json();
+          const controller = new AbortController();
+          const tId = setTimeout(() => controller.abort(), 20000);
+          try {
+            const res = await fetch("/api/evaluate-recall", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+              signal: controller.signal
+            });
+            data = await res.json();
+          } catch (_) {
+            data = offlineGradeRecall(payload);
+          } finally {
+            clearTimeout(tId);
+          }
         }
         sprintTotal++;
         if (data.is_correct) sprintCorrect++;
-        document.getElementById("sprint-score-badge").textContent =
-          `${Math.round((sprintCorrect / sprintTotal) * 100)}% (${sprintCorrect}/${sprintTotal})`;
+        updateScoreDisplays();
 
         const box = document.getElementById("sprint-feedback-box");
         box.className = `mt-4 p-4 rounded-xl border text-xs ${
@@ -795,7 +1027,8 @@
         box.innerHTML = `<strong>Score: ${data.score}/100</strong> — ${data.feedback}<br/><span class="text-slate-300 mt-1 block">Answer: <strong>${a.concept_term}</strong> (${a.concept_definition})</span>`;
         box.classList.remove("hidden");
       } finally {
-        btn.textContent = "Check My Answer";
+        btn.disabled = false;
+        btn.textContent = "Check Answer";
       }
     }
 
@@ -804,77 +1037,78 @@
       renderSprintCard();
     }
 
-    function startABTrial() {
-      const stage = document.getElementById("ab-stage");
-      stage.innerHTML = `
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase text-cyan-400">Quick Memory Check</span>
-            <span class="text-xs text-slate-400">Pick the answer that matches each clue:</span>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <div class="text-xs font-bold text-slate-400 mb-2">1. Plain Flashcard #2 (No picture clue): What was on Card #2?</div>
-              <select id="ab-q1" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                <option value="0">Choose your answer...</option>
-                <option value="0">Atropine (Muscarinic blocker)</option>
-                <option value="1">Lambert-Eaton Syndrome (Ca2+ channel)</option>
-                <option value="0">Raft Consensus</option>
-              </select>
-            </div>
-            <div class="p-3.5 rounded-xl bg-slate-900 border border-cyan-500/40">
-              <div class="text-xs font-bold text-cyan-300 mb-2">2. Room Object Clue (Steaming Coffee Carafe + Dandelion):</div>
-              <select id="ab-q2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                <option value="0">Choose your answer...</option>
-                <option value="1">Dantrolene (RyR1 Malignant Hyperthermia blocker)</option>
-                <option value="0">Pralidoxime (2-PAM)</option>
-                <option value="0">Levodopa / Carbidopa</option>
-              </select>
-            </div>
-          </div>
-          <button onclick="scoreABTrial()" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition">
-            See My Result
-          </button>
-        </div>
-      `;
+    function prevSprintCard() {
+      const len = currentPalace.anchors.length;
+      sprintIndex = (sprintIndex - 1 + len) % len;
+      renderSprintCard();
     }
 
-    function scoreABTrial() {
-      const q1 = parseInt(document.getElementById("ab-q1").value || "0", 10);
-      const q2 = parseInt(document.getElementById("ab-q2").value || "0", 10);
-      const controlPct = q1 ? 50 : 33;
-      const spatialPct = q2 ? 96 : 78;
-      const lift = (spatialPct / controlPct).toFixed(2);
+    // Real 60-Second Timed Challenge using the current room's pins
+    function toggleTimedChallenge() {
+      if (timedModeActive) {
+        stopTimedChallenge();
+        return;
+      }
+      timedModeActive = true;
+      timeRemaining = 60;
+      sprintIndex = 0;
+      sprintCorrect = 0;
+      sprintTotal = 0;
+      updateScoreDisplays();
+      renderSprintCard();
 
-      document.getElementById("ab-bar-control").style.width = `${controlPct}%`;
-      document.getElementById("ab-bar-control-label").textContent = `${controlPct}%`;
-      document.getElementById("ab-bar-spatial").style.width = `${spatialPct}%`;
-      document.getElementById("ab-bar-spatial-label").textContent = `${spatialPct}%`;
-      document.getElementById("ab-lift-badge").textContent = `${lift}x Easier to Remember`;
+      document.getElementById("timer-pill").classList.remove("hidden");
+      document.getElementById("timer-seconds").textContent = "60";
+      document.getElementById("timed-mode-btn").textContent = "⏹ Stop 60s Timer";
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        document.getElementById("timer-seconds").textContent = String(Math.max(0, timeRemaining));
+        if (timeRemaining <= 0) {
+          stopTimedChallenge();
+          const pct = sprintTotal > 0 ? Math.round((sprintCorrect / sprintTotal) * 100) : 0;
+          showBanner(`⏰ Time’s up! You answered ${sprintCorrect} of ${sprintTotal} correctly (${pct}%) in 60 seconds.`, false);
+        }
+      }, 1000);
     }
 
-    function switchMode(mode) {
-      ["palace", "sprint", "abtest"].forEach((m) => {
-        document.getElementById(`view-${m}`).classList.toggle("hidden", m !== mode);
-        const tab = document.getElementById(`tab-${m}`);
-        if (m === mode) {
-          tab.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition";
+    function stopTimedChallenge() {
+      timedModeActive = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      document.getElementById("timer-pill").classList.add("hidden");
+      document.getElementById("timed-mode-btn").textContent = "⚡ Start 60s Timed Challenge";
+    }
+
+    function switchScreen(screen) {
+      hideBanner();
+      document.getElementById("loading-screen").classList.add("hidden");
+      ["start", "room", "quiz"].forEach((s) => {
+        document.getElementById(`screen-${s}`).classList.toggle("hidden", s !== screen);
+        const navBtn = document.getElementById(`nav-${s}`);
+        if (s === screen) {
+          navBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 transition";
         } else {
-          tab.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+          navBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
         }
       });
+      if (screen === "quiz") {
+        renderSprintCard();
+      }
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      updateScoreDisplays();
       renderPalace();
+      switchScreen("start");
     });
   </script>
 
   <!--
-    Serverless Gemini backend via Firebase AI Logic (Gemini Developer API, works on the no-cost Spark plan).
-    Mirrors the prompts/schemas in main.py. When FIREBASE_CONFIG is null, the app falls back to the
-    FastAPI endpoints (/api/generate-palace, /api/evaluate-recall) so the Cloud Run deployment still works.
-    Note: the Firebase web config is a public identifier, not a secret.
+    Firebase AI Logic + Firebase App Check (ReCaptchaEnterpriseProvider).
+    Every Gemini call has a strict 20-second timeout and falls back gracefully.
   -->
   <script type="module">
     const FIREBASE_CONFIG = {
@@ -886,25 +1120,47 @@
       appId: "1:464718752366:web:6edd3ae2361de8794b547f",
       measurementId: "G-XXDVW9VQWS"
     };
+    const RECAPTCHA_ENTERPRISE_SITE_KEY = "6LfRD_UtAAAAAGN-UeL8u2NmM1YkRyjgcK7Hc5By";
     const GEMINI_MODEL = "gemini-3.8-flash";
     const FIREBASE_SDK = "https://www.gstatic.com/firebasejs/13.0.0";
+    const GEMINI_TIMEOUT_MS = 20000;
+
+    function withTimeout(promise, ms = GEMINI_TIMEOUT_MS) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("Request timed out after 20 seconds")), ms);
+        promise.then(
+          (val) => { clearTimeout(timer); resolve(val); },
+          (err) => { clearTimeout(timer); reject(err); }
+        );
+      });
+    }
 
     if (FIREBASE_CONFIG) {
       const { initializeApp } = await import(`${FIREBASE_SDK}/firebase-app.js`);
+      const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import(`${FIREBASE_SDK}/firebase-app-check.js`);
       const { getAI, getGenerativeModel, GoogleAIBackend, Schema } = await import(`${FIREBASE_SDK}/firebase-ai.js`);
 
-      const ai = getAI(initializeApp(FIREBASE_CONFIG), { backend: new GoogleAIBackend() });
+      const app = initializeApp(FIREBASE_CONFIG);
+
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_ENTERPRISE_SITE_KEY),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch (_) {}
+
+      const ai = getAI(app, { backend: new GoogleAIBackend() });
 
       const anchorSchema = Schema.object({
         properties: {
           id: Schema.integer({ description: "Sequential station number starting at 1" }),
           object_name: Schema.string({ description: "Name of the physical object detected in the room photo" }),
           box_2d: Schema.array({ items: Schema.integer(), description: "2D bounding box [ymin, xmin, ymax, xmax] normalized 0 to 1000" }),
-          concept_term: Schema.string({ description: "The target term, concept, or formula to memorize" }),
-          concept_definition: Schema.string({ description: "Concise, accurate explanation or translation of the concept" }),
-          sensory_mnemonic: Schema.string({ description: "Vivid, bizarre, multisensory action scene physically linking the object_name to the concept_term" }),
-          acoustic_cue_hz: Schema.integer({ description: "Distinct musical frequency in Hz between 220 and 660 for Targeted Memory Reactivation" }),
-          socratic_question: Schema.string({ description: "Active recall question that prompts the user to retrieve the concept using the spatial anchor" })
+          concept_term: Schema.string({ description: "The target term, concept, or item to remember" }),
+          concept_definition: Schema.string({ description: "Concise, clear explanation of the concept" }),
+          sensory_mnemonic: Schema.string({ description: "Vivid, playful visual story physically linking the object_name to the concept_term" }),
+          acoustic_cue_hz: Schema.integer({ description: "Distinct musical frequency in Hz between 220 and 660" }),
+          socratic_question: Schema.string({ description: "Simple question asking the user to recall the concept from the room object" })
         }
       });
 
@@ -914,7 +1170,7 @@
           responseMimeType: "application/json",
           responseSchema: Schema.object({
             properties: {
-              topic_summary: Schema.string(),
+              topic_summary: Schema.string({ description: "Short 2 to 5 word title for this topic" }),
               cognitive_principle: Schema.string(),
               grounded_sources: Schema.array({ items: Schema.string() }),
               anchors: Schema.array({ items: anchorSchema })
@@ -930,9 +1186,9 @@
           responseMimeType: "application/json",
           responseSchema: Schema.object({
             properties: {
-              score: Schema.integer({ description: "Score from 0 to 100 based on semantic accuracy" }),
+              score: Schema.integer({ description: "Score from 0 to 100 based on meaning" }),
               is_correct: Schema.boolean({ description: "True if score is 70 or above" }),
-              feedback: Schema.string({ description: "1-sentence Socratic feedback reinforcing the spatial anchor" })
+              feedback: Schema.string({ description: "Friendly 1-sentence feedback referencing the room object" })
             }
           }),
           temperature: 0.2
@@ -950,16 +1206,21 @@
 
       async function generatePalace({ file, topic, studyNotes = "" }) {
         let groundedContext = "";
-        const groundedUrls = [];
+        const groundedLinks = [];
         if (studyNotes.trim().length < 40) {
           try {
-            const g = await groundedModel.generateContent(
-              `Extract 5 high-yield, technically accurate key terms and definitions for studying: ${topic}. Be concise.`
+            const g = await withTimeout(
+              groundedModel.generateContent(
+                `Extract 5 practical, beginner-friendly key items and short explanations for: ${topic}. Be concise.`
+              ),
+              GEMINI_TIMEOUT_MS
             );
             groundedContext = g.response.text() || "";
             const chunks = g.response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
             for (const c of chunks.slice(0, 3)) {
-              if (c.web?.uri) groundedUrls.push(c.web.title || c.web.uri);
+              if (c.web?.uri) {
+                groundedLinks.push({ title: c.web.title || c.web.uri, uri: c.web.uri });
+              }
             }
           } catch (_) {
             groundedContext = "";
@@ -967,59 +1228,46 @@
         }
 
         const prompt = `
-You are a computational cognitive neuroscientist specializing in the Method of Loci (Spatial Memory Palaces) and Targeted Memory Reactivation (TMR).
-
-Analyze this room image and identify exactly 5 distinct, well-spaced physical objects across the scene from left to right.
-For each physical object:
-1. Return its exact 2D bounding box \`box_2d\` in \`[ymin, xmin, ymax, xmax]\` format normalized from 0 to 1000.
-2. Map one core concept from the study material below onto that physical object.
-3. Create an unforgettable, bizarre, multisensory visual association (\`sensory_mnemonic\`) where the concept physically interacts with that specific object in the room.
-4. Assign a distinct acoustic cue frequency (\`acoustic_cue_hz\`) between 220 and 660 Hz.
-5. Write a Socratic recall question.
+Analyze this room image and identify 5 distinct, well-spaced physical objects from left to right.
+For each object:
+1. Return its 2D bounding box \`box_2d\` in \`[ymin, xmin, ymax, xmax]\` normalized 0 to 1000.
+2. Attach one key item or concept from the topic below onto that object.
+3. Write a fun, memorable visual story (\`sensory_mnemonic\`) where the concept interacts with that specific object.
+4. Assign an \`acoustic_cue_hz\` between 220 and 660.
+5. Write a clear quiz question (\`socratic_question\`).
+Keep \`topic_summary\` to a short 2 to 5 word title.
 
 TARGET TOPIC: ${topic}
-USER STUDY MATERIAL: ${studyNotes}
-GROUNDED KNOWLEDGE CONTEXT: ${groundedContext}
+USER NOTES: ${studyNotes}
+GROUNDED CONTEXT: ${groundedContext}
 `;
-        const result = await palaceModel.generateContent([
-          { inlineData: { data: await fileToBase64(file), mimeType: file.type || "image/jpeg" } },
-          prompt
-        ]);
+        const result = await withTimeout(
+          palaceModel.generateContent([
+            { inlineData: { data: await fileToBase64(file), mimeType: file.type || "image/jpeg" } },
+            prompt
+          ]),
+          GEMINI_TIMEOUT_MS
+        );
         const data = JSON.parse(result.response.text());
-        if (groundedUrls.length) {
-          data.grounded_sources = groundedUrls;
-        } else if (!data.grounded_sources || !data.grounded_sources.length) {
-          data.grounded_sources = ["Gemini 3.8 Flash Multimodal Spatial Engine"];
-        }
+        data.grounded_links = groundedLinks;
         return data;
       }
 
       async function evaluateRecall(req) {
         try {
           const prompt = `
-Evaluate the learner's active recall response during a Method of Loci Socratic sprint.
-Physical Room Anchor: ${req.object_name}
+Grade the user's quiz answer based on meaning (paraphrased answers that get the main idea right should score 85-100).
+Room Object: ${req.object_name}
 Target Concept: ${req.concept_term}
 Target Definition: ${req.concept_definition}
-Learner's Response: ${req.user_answer}
+User's Answer: ${req.user_answer}
 
-Grade semantically (paraphrased accurate understanding should score 85-100). If partially correct or wrong, give a brief 1-sentence Socratic cue referencing the physical anchor (${req.object_name}).
+Give a brief, encouraging 1-sentence feedback mentioning the ${req.object_name}.
 `;
-          const result = await recallModel.generateContent(prompt);
+          const result = await withTimeout(recallModel.generateContent(prompt), GEMINI_TIMEOUT_MS);
           return JSON.parse(result.response.text());
         } catch (_) {
-          // Same offline heuristic as main.py so the sprint never dead-ends.
-          const userLow = req.user_answer.toLowerCase();
-          const termLow = req.concept_term.toLowerCase();
-          const passed = userLow.length > 3 && (userLow.includes(termLow.slice(0, 4)) ||
-            req.concept_definition.toLowerCase().split(/\s+/).slice(0, 5).some((w) => userLow.includes(w)));
-          return {
-            score: passed ? 92 : 35,
-            is_correct: passed,
-            feedback: passed
-              ? `Strong spatial retrieval at the ${req.object_name}!`
-              : `Visualize the bizarre action happening right on the ${req.object_name} to trigger ${req.concept_term}.`
-          };
+          return window.offlineGradeRecall(req);
         }
       }
 
@@ -1028,4 +1276,3 @@ Grade semantically (paraphrased accurate understanding should score 85-100). If 
   </script>
 </body>
 </html>
-
